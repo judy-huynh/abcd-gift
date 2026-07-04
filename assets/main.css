@@ -1093,8 +1093,8 @@
     flex-direction: column;
     justify-content: center;
     /* align-items: center; */
-    width: 33.33%;
-    padding-right: 20px;
+    width: 25%;
+    padding-right: 24px;
     box-sizing: border-box;
 }
 
@@ -1117,8 +1117,8 @@
 }
 
 .product-info__main {
-    width: 33.33%;
-    padding-left: 20px !important;
+    width: 25%;
+    padding-left: 24px !important;
     padding-top: 0px !important;
     display: flex;
     flex-direction: column;
@@ -1131,7 +1131,7 @@
     width: 100% !important;
 }
 .figureImg {
-    width: 33.33% !important;
+    width: 50% !important;
     box-sizing: border-box;
 }
 

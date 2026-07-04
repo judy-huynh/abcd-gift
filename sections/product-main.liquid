@@ -108,6 +108,37 @@
 .image-navigation{
   display: none;
 }
+/* Show pair-navigation arrows/dots on desktop below the image pair */
+@media screen and (min-width: 750px) {
+  .image-navigation.has-multiple-pairs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+    grid-column: 1 / -1; /* span both columns of the pair grid */
+  }
+  .image-navigation.has-multiple-pairs .nav-arrow {
+    cursor: pointer;
+    padding: 6px 8px;
+    font-size: 22px;
+    line-height: 1;
+  }
+  .image-navigation.has-multiple-pairs .nav-dots {
+    display: flex;
+    gap: 8px;
+  }
+  .image-navigation.has-multiple-pairs .nav-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ddd;
+    cursor: pointer;
+  }
+  .image-navigation.has-multiple-pairs .nav-dot.active {
+    background: #000;
+  }
+}
 {% if product.images.size < 2 %}
   .product__item-img {
     cursor: inherit;
@@ -269,16 +300,109 @@
   }
 }
 
+/* ── Product page redesign (desktop only) ── */
+@media screen and (min-width: 750px) {
 
+  /* Title in its own container, 8vh below header, 42px, one line via JS auto-fit */
+  .product-title-container {
+    margin-top: 8vh;
+    margin-bottom: 6vh;
+    text-align: center;
+  }
+  .product-info__title--above {
+    font-size: 42px;
+    line-height: 1.15em;
+    margin: 0 auto;
+    padding: 0;
+    max-width: 100%;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  /* 25 / 50 / 25 columns */
+  .product-info {
+    display: flex;
+    align-items: center;
+  }
+  .product-info__pc {
+    width: 25%;
+    padding-right: 24px;
+    box-sizing: border-box;
+  }
+  .figureImg {
+    width: 50% !important;
+    box-sizing: border-box;
+    padding: 0 12px;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: center;
+    justify-items: center;
+    /* Override the min-height calc so it doesn't inherit the tall old height */
+  }
+  .figureImg--single {
+    grid-template-columns: 1fr;
+  }
+  .product-info__main {
+    width: 25%;
+    padding-left: 24px !important;
+    padding-top: 0 !important;
+    box-sizing: border-box;
+  }
+
+  /* Photos inside the 50% column — grid children, only two active */
+  .figureImg .product__item-img,
+  .figureImg .product__item-video {
+    display: none !important;
+    position: static !important;
+    transform: none !important;
+    opacity: 1 !important;
+    max-height: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+  .figureImg .product__item-img.active,
+  .figureImg .product__item-img.active-pair,
+  .figureImg .product__item-video.active,
+  .figureImg .product__item-video.active-pair {
+    display: block !important;
+  }
+
+  /* Single-image variant: image centered and slightly larger */
+  .figureImg--single .product__item-img.active {
+    max-width: 80% !important;
+    margin: 0 auto;
+  }
+
+  /* Hide the old side-overlay gallery arrows (image-clickable navigation) */
+  .gallery-overlay-left,
+  .gallery-overlay-right {
+    display: none !important;
+  }
+}
+
+/* Mobile untouched */
+@media screen and (max-width: 749px) {
+  .product-title-container {
+    text-align: center;
+    margin: 0 auto;
+  }
+}
 </style>
 
 <div class="page-width">
+  {% assign current_variant = product.selected_or_first_available_variant %}
+  {% assign featured_image = current_variant.featured_image | default: product.featured_image %}
+
+  <div class="product-title-container">
+    <h2 class="product-info__title product-info__title-top product-info__title--above">{{ product.title }}</h2>
+  </div>
+
   <div class="product-info">
-    {% assign current_variant = product.selected_or_first_available_variant %}
-    {% assign featured_image = current_variant.featured_image | default: product.featured_image %}
-  
+
     <div class="product-info__pc">
-      <h2 class="product-info__title product-info__title-top">{{ product.title }}</h2>
       {% for block in section.blocks %}
           {% case block.type %}
 
@@ -313,7 +437,6 @@
       </video>
       {% endif %}
       {% endfor %}
-    </div>
 
     {% if product.images.size > 1 or product.media.size > 1 %}
     <div class="image-navigation" id="image-navigation">
@@ -330,6 +453,7 @@
       </span>
     </div>
     {% endif %}
+    </div>
   
     <div class='product-info__main'>
       <form action="/cart/add" method="post" enctype="multipart/form-data" id="AddToCartForm">
@@ -471,25 +595,35 @@ document.addEventListener('DOMContentLoaded', function() {
 function updateMediaPosition() {
   if (items.length > 1) {
     if (window.matchMedia('(min-width: 749px)').matches) {
+      // Desktop: show two images at a time (current pair)
+      var pairIndex = Math.floor(currentIndex / 2);
+      var firstOfPair = pairIndex * 2;
+      var secondOfPair = firstOfPair + 1;
       items.forEach((item, index) => {
-        if (index === currentIndex) {
-          item.classList.add('active'); 
-          item.classList.add('fade-in'); 
-          setTimeout(() => {
-            item.classList.remove('fade-in'); 
-          }, 300);
-
-          if (item.tagName === 'VIDEO') {
-            item.play(); 
-          }
+        item.classList.remove('active', 'active-pair');
+        if (index === firstOfPair) {
+          item.classList.add('active');
+          item.classList.add('fade-in');
+          setTimeout(() => item.classList.remove('fade-in'), 300);
+          if (item.tagName === 'VIDEO') item.play();
+        } else if (index === secondOfPair) {
+          item.classList.add('active-pair');
+          item.classList.add('fade-in');
+          setTimeout(() => item.classList.remove('fade-in'), 300);
+          if (item.tagName === 'VIDEO') item.play();
         } else {
-          item.classList.remove('active'); 
           if (item.tagName === 'VIDEO') {
-            item.pause(); 
-            item.currentTime = 0; 
+            item.pause();
+            item.currentTime = 0;
           }
         }
       });
+      // Toggle single-image styling if the pair has only one item
+      if (secondOfPair >= items.length) {
+        gallery.classList.add('figureImg--single');
+      } else {
+        gallery.classList.remove('figureImg--single');
+      }
       updateCursor(items[currentIndex]);
     } else {
       const offset = currentIndex * -100;
@@ -508,59 +642,90 @@ function updateMediaPosition() {
     updateDots();
   } else if (items.length === 1) {
     items[0].classList.add('active');
-    items[0].classList.add('fade-in'); 
+    items[0].classList.add('fade-in');
     setTimeout(() => {
-      items[0].classList.remove('fade-in'); 
+      items[0].classList.remove('fade-in');
     }, 300);
-
     if (items[0].tagName === 'VIDEO') {
-      items[0].play(); 
+      items[0].play();
     }
+    // Single image — collapse grid so it centers and fills the space
+    gallery.classList.add('figureImg--single');
   }
 }
 
+  // Step size — 2 on desktop (pairs), 1 on mobile (single image)
+  function step() {
+    return window.matchMedia('(min-width: 749px)').matches ? 2 : 1;
+  }
+
   function updateDots() {
     const dots = navDotsContainer.querySelectorAll('.nav-dot');
+    const activeGroup = Math.floor(currentIndex / step());
     dots.forEach((dot, index) => {
-      dot.classList.toggle('active', index === currentIndex);
+      dot.classList.toggle('active', index === activeGroup);
     });
   }
 
   function createDots() {
-    items.forEach((item, index) => {
+    // Desktop: one dot per pair. Mobile: one dot per image.
+    navDotsContainer.innerHTML = '';
+    const s = step();
+    const dotCount = Math.ceil(items.length / s);
+    for (let i = 0; i < dotCount; i++) {
       const dot = document.createElement('div');
       dot.classList.add('nav-dot');
-      if (index === currentIndex) {
-        dot.classList.add('active');
-      }
+      if (i === Math.floor(currentIndex / s)) dot.classList.add('active');
       dot.addEventListener('click', () => {
-        currentIndex = index;
+        currentIndex = i * s;
         updateMediaPosition();
       });
       navDotsContainer.appendChild(dot);
-    });
+    }
   }
 
   function handleSwipe(direction) {
+    const s = step();
     if (direction === 'left') {
-      currentIndex = (currentIndex + 1) % items.length;
+      currentIndex = (currentIndex + s) % items.length;
     } else if (direction === 'right') {
-      currentIndex = (currentIndex - 1 + items.length) % items.length;
+      currentIndex = (currentIndex - s + items.length) % items.length;
     }
     updateMediaPosition();
   }
 
   function handleArrowClick(direction) {
+    const s = step();
     if (direction === 'left') {
-      currentIndex = (currentIndex - 1 + items.length) % items.length;
+      currentIndex = (currentIndex - s + items.length) % items.length;
     } else if (direction === 'right') {
-      currentIndex = (currentIndex + 1) % items.length;
+      currentIndex = (currentIndex + s) % items.length;
     }
     updateMediaPosition();
   }
 
-  prevArrow.addEventListener('click', () => handleArrowClick('left'));
-  nextArrow.addEventListener('click', () => handleArrowClick('right'));
+  if (prevArrow) prevArrow.addEventListener('click', () => handleArrowClick('left'));
+  if (nextArrow) nextArrow.addEventListener('click', () => handleArrowClick('right'));
+
+  // Show pair navigation UI on desktop when more than one pair exists
+  function refreshNavVisibility() {
+    var nav = document.getElementById('image-navigation');
+    if (!nav) return;
+    var s = step();
+    var pairCount = Math.ceil(items.length / s);
+    if (window.matchMedia('(min-width: 749px)').matches && pairCount > 1) {
+      nav.classList.add('has-multiple-pairs');
+    } else {
+      nav.classList.remove('has-multiple-pairs');
+    }
+  }
+  refreshNavVisibility();
+  window.addEventListener('resize', function() {
+    // Recreate dots and refresh visibility on resize (step changes between mobile/desktop)
+    createDots();
+    refreshNavVisibility();
+    updateMediaPosition();
+  });
 
   function isTouchDevice() {
     return ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0);
@@ -671,28 +836,52 @@ function updateMediaPosition() {
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     function setProductInfoHeight() {
-      
+      var productInfo = document.querySelector('.product-info');
+      if (!productInfo) return;
       if (window.matchMedia('(min-width: 749px)').matches) {
-       
         var header = document.getElementById('shopify-section-header');
-        var productInfo = document.querySelector('.product-info');
-        
-        if (header && productInfo) {
-          var headerHeight = header.offsetHeight;
-          
-          productInfo.style.height = `calc(95vh - ${headerHeight}px)`;
-        }
+        var titleWrap = document.querySelector('.product-title-container');
+        var stickyFooter = document.querySelector('.sticky-site-footer');
+        var headerHeight = header ? header.offsetHeight : 0;
+        var titleHeight = titleWrap ? titleWrap.offsetHeight : 0;
+        var footerHeight = stickyFooter ? stickyFooter.offsetHeight : 0;
+        productInfo.style.height = 'calc(100vh - ' + headerHeight + 'px - ' + titleHeight + 'px - ' + footerHeight + 'px - 20px)';
       } else {
-        var productInfo = document.querySelector('.product-info');
-        if (productInfo) {
-          productInfo.style.height = ''; 
-        }
+        productInfo.style.height = '';
       }
     }
 
+    // Auto-fit product title on one line — starts at 42px, shrinks to fit
+    function fitProductTitle() {
+      var title = document.querySelector('.product-info__title--above');
+      if (!title) return;
+      if (!window.matchMedia('(min-width: 749px)').matches) {
+        title.style.fontSize = '';
+        return;
+      }
+      var maxSize = 42;
+      var minSize = 16;
+      var parentWidth = title.parentElement.clientWidth;
+      title.style.fontSize = maxSize + 'px';
+      var size = maxSize;
+      while (title.scrollWidth > parentWidth && size > minSize) {
+        size -= 1;
+        title.style.fontSize = size + 'px';
+      }
+    }
+
+    fitProductTitle();
     setProductInfoHeight();
 
-    window.addEventListener('resize', setProductInfoHeight);
+    window.addEventListener('resize', function() {
+      fitProductTitle();
+      setProductInfoHeight();
+    });
+    // Also re-run after images and sticky footer paint so heights are accurate
+    window.addEventListener('load', function() {
+      fitProductTitle();
+      setProductInfoHeight();
+    });
   });
 </script>
 

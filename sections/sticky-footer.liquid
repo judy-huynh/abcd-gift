@@ -1,0 +1,142 @@
+{% comment %}
+  Sitewide sticky footer image — pins the ABCD logo (or promo image) to the bottom
+  of the viewport on every page. Padding-bottom is reserved on #MainContent
+  via a small script so the last row of content isn't hidden behind it.
+{% endcomment %}
+
+<style>
+  .sticky-site-footer {
+    width: 100%;
+    display: block;
+    background-color: {{ section.settings.background_color }};
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 999;
+    box-shadow: 0 -2px 6px rgba(0,0,0,0.04);
+  }
+  .sticky-site-footer__container {
+    width: {{ section.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: {{ section.settings.padding_top }}px {{ section.settings.padding_horizontal }}px {{ section.settings.padding_bottom }}px;
+  }
+  .sticky-site-footer__image-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: {{ section.settings.image_alignment }};
+    align-items: center;
+  }
+  .sticky-site-footer__image {
+    max-width: {{ section.settings.image_width }}px;
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  @media screen and (max-width: 749px) {
+    .sticky-site-footer__container {
+      padding: {{ section.settings.padding_top_mobile }}px {{ section.settings.padding_horizontal_mobile }}px {{ section.settings.padding_bottom_mobile }}px;
+    }
+    /* Mirror the header on mobile: image fills viewport width */
+    .sticky-site-footer__image {
+      max-width: 100%;
+      width: 100%;
+    }
+  }
+</style>
+
+{%- if section.settings.footer_image != blank -%}
+  {%- assign footer_img_url = section.settings.footer_image | image_url: width: 2000 -%}
+{%- else -%}
+  {%- comment -%} Fallback to the ABCD-Logo.svg already uploaded to the store's Files {%- endcomment -%}
+  {%- assign footer_img_url = 'ABCD-Logo.svg' | file_url -%}
+{%- endif -%}
+<div class="sticky-site-footer">
+  <div class="sticky-site-footer__container">
+    <div class="sticky-site-footer__image-wrapper">
+      <img
+        src="{{ footer_img_url }}"
+        alt="{{ shop.name }}"
+        loading="lazy"
+        class="sticky-site-footer__image"
+      >
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    function reserveFooterSpace() {
+      var footer = document.querySelector('.sticky-site-footer');
+      var main = document.getElementById('MainContent');
+      if (!footer || !main) return;
+      main.style.paddingBottom = footer.offsetHeight + 'px';
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', reserveFooterSpace);
+    } else {
+      reserveFooterSpace();
+    }
+    window.addEventListener('resize', reserveFooterSpace);
+    window.addEventListener('load', reserveFooterSpace);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Sticky footer",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "footer_image",
+      "label": "Footer image",
+      "info": "Optional. Falls back to ABCD-Logo.svg in Content > Files if left blank."
+    },
+    {
+      "type": "range",
+      "id": "image_width",
+      "label": "Image width (desktop)",
+      "min": 100,
+      "max": 2000,
+      "step": 50,
+      "unit": "px",
+      "default": 1600
+    },
+    {
+      "type": "select",
+      "id": "image_alignment",
+      "label": "Image alignment",
+      "options": [
+        { "value": "flex-start", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "flex-end", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    { "type": "header", "content": "Spacing (desktop)" },
+    { "type": "range", "id": "padding_top", "label": "Top padding", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 5 },
+    { "type": "range", "id": "padding_bottom", "label": "Bottom padding", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 5 },
+    { "type": "range", "id": "padding_horizontal", "label": "Horizontal padding", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 10 },
+    { "type": "header", "content": "Spacing (mobile)" },
+    { "type": "range", "id": "padding_top_mobile", "label": "Top padding", "min": 0, "max": 80, "step": 1, "unit": "px", "default": 15 },
+    { "type": "range", "id": "padding_bottom_mobile", "label": "Bottom padding", "min": 0, "max": 80, "step": 1, "unit": "px", "default": 15 },
+    { "type": "range", "id": "padding_horizontal_mobile", "label": "Horizontal padding", "min": 0, "max": 60, "step": 1, "unit": "px", "default": 20 }
+  ]
+}
+{% endschema %}

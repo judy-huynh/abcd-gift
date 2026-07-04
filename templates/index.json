@@ -31,41 +31,11 @@
     "newsletter_RYmzbr": {
       "type": "newsletter",
       "settings": {}
-    },
-    "1783095013a413abde": {
-      "type": "_blocks",
-      "blocks": {
-        "ai_gen_block_28fb420_nPgfrB": {
-          "type": "ai_gen_block_28fb420",
-          "settings": {
-            "footer_image": "shopify://shop_images/ABCD-Logo.svg",
-            "image_width": 1600,
-            "image_width_mobile": 300,
-            "image_alignment": "center",
-            "desktop_width_percent": 100,
-            "background_color": "#ffffff",
-            "padding_top": 20,
-            "padding_bottom": 20,
-            "padding_horizontal": 30,
-            "padding_top_mobile": 15,
-            "padding_bottom_mobile": 15,
-            "padding_horizontal_mobile": 20
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "ai_gen_block_28fb420_nPgfrB"
-      ],
-      "custom_css": [],
-      "name": "Footer",
-      "settings": {}
     }
   },
   "order": [
     "featured-collection",
     "button_qJbcBX",
-    "newsletter_RYmzbr",
-    "1783095013a413abde"
+    "newsletter_RYmzbr"
   ]
 }

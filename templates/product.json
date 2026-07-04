@@ -39,11 +39,16 @@
       "type": "newsletter",
       "disabled": true,
       "settings": {}
+    },
+    "1783131838666e3737": {
+      "type": "_blocks",
+      "settings": {}
     }
   },
   "order": [
     "main",
     "product-recommendations",
-    "newsletter_q7yWwL"
+    "newsletter_q7yWwL",
+    "1783131838666e3737"
   ]
 }
