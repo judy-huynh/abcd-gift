@@ -1,0 +1,163 @@
+<style>
+  .search-button{
+    padding: 12px 18px;
+    height: 100%;
+    height: auto;
+    cursor: pointer;
+    min-height: 100%;
+    font-size: 14px;
+    border: none;
+    border-radius: 0;
+    font-family: var(--font-heading-family) !important;
+    font-style: var(--font-heading-style) !important;
+    font-weight: var(--font-heading-weight) !important;
+    font-size: 15px;
+  }
+  .search-field{
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    padding: 11px 18px;
+    font-size: 14px;
+  color: {{ settings.input-color }} !important;
+  background: {{ settings.input-bg }} !important;
+    border: 1px solid {{ settings.input-color }} !important;
+    border-radius: 0;
+  }
+  .search-cont{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 50px 0px 30px;
+  }
+  .f-collection-title{
+    margin-bottom: 20px;
+  }
+  .waiting-results {
+    height: 74vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+  .text-center{
+    text-align: center;
+  }
+</style>
+<div id="searchresults" class="page-width {% if search.performed %}results-shown{% else %}waiting-results{% endif %}">
+  <form action="/search" method="get">
+    <p class="search-cont"><input class="search-field" type="text" name="q" value="{{ search.terms  | escape }}" id="result-q" /> 
+    <input type="submit" value="Search" class="search-button button" /></p>
+  </form>
+  
+  {% if search.performed %}
+    
+    {% paginate search.results by 10 %}  
+  
+    {% if search.results == empty %}  
+      <h2 class="f-collection-title text-center">NO PRODUCTS FOUND</h2>
+    {% else %}  
+      <div class="featured-collection">
+        {% if search.terms != blank %}
+          <h2 class="f-collection-title">FOUND RESULTS — "{{ search.terms }}"
+          </h2>
+        {% endif %}
+        
+        <div class="product-list">
+          {% for product in search.results %}
+            {% if product.object_type == 'product' %}
+              <div class='product-list__product-block fade-in'>
+                <a class='product-list__img-link' href='{{ product.url }}'>
+                  <img class='product-list__product-img' src='{{ product.featured_image | img_url: 'master' }}' 
+                    onload="this.closest('.product-list__product-block').classList.add('loaded')">
+                </a>
+                <a class='product-list__product-name' href='{{ product.url }}'>{{ product.title }}</a>
+                
+                {% if product.compare_at_price > product.price and product.compare_at_price > 0 %}
+                  <p class='product-list__product-price'>
+                    {{ product.price | money }}
+                    <span><strike style="margin-left: 10px;">{{ product.compare_at_price | money }}</strike></span>
+                  </p>
+                {% else %}
+                  {% assign available = false %}
+                  {% for variant in product.variants %}
+                    {% if variant.inventory_management == nil or variant.inventory_policy == 'continue' %}
+                      {% assign available = true %}
+                      {% break %}
+                    {% elsif variant.inventory_quantity > 0 %}
+                      {% assign available = true %}
+                      {% break %}
+                    {% endif %}
+                  {% endfor %}
+                  {% if available %}
+                    <p class='product-list__product-price'>{{ product.price | money }}</p>
+                  {% else %}
+                    <p class='product-list__product-price'>{{ product.price | money }} — <strong>SOLD OUT</strong></p>
+                  {% endif %}
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+    {% endif %}
+   {% if search.results_count > 10 %}
+    <div class="pages">
+      
+            <span class="span_left" style="opacity: {% if paginate.previous %}1{% else %}0.4{% endif %};">
+              {% if paginate.previous %}
+                <a href="{{ paginate.previous.url }}">
+              {% endif %}
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <g clip-path="url(#clip0_125_2)">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M14.1104 20L15.5 18.5946L7.23877 9.98688L8.11963 9.0688L8.11523 9.07385L15.4556 1.42655L14.0859 -4.19015e-07C12.0572 2.1136 6.39321 8.01453 4.5 9.98689C5.90611 11.4528 4.53486 10.0242 14.1104 20Z" fill="black"/>
+                </g>
+                <defs>
+                  <clipPath id="clip0_125_2">
+                    <rect width="20" height="20" fill="white" transform="translate(0 20) rotate(-90)"/>
+                  </clipPath>
+                </defs>
+              </svg>
+              {% if paginate.previous %}
+                </a>
+              {% endif %}
+            </span>
+            
+            {% for part in paginate.parts %}
+              {% if part.is_link %}
+                <span class="page-link page-navigation">
+                  <a href="{{ part.url }}">{{ part.title }}</a>
+                </span>
+              {% elsif part.title == '...' %}
+                <span class="page-dots">{{ part.title }}</span>
+              {% else %}
+                <span class="page-current page-navigation">{{ part.title }}</span>
+              {% endif %}
+            {% endfor %}
+
+            <span class="span_right" style="opacity: {% if paginate.next %}1{% else %}0.4{% endif %};">
+              {% if paginate.next %}
+                <a href="{{ paginate.next.url }}">
+              {% endif %}
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <g clip-path="url(#clip0_125_7)">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M5.88965 20L4.5 18.5946L12.7612 9.98688L11.8804 9.0688L11.8848 9.07385L4.54443 1.42655L5.91406 -4.19015e-07C7.94284 2.1136 13.6068 8.01453 15.5 9.98689C14.0939 11.4528 15.4651 10.0242 5.88965 20Z" fill="black"/>
+                </g>
+                <defs>
+                  <clipPath id="clip0_125_7">
+                    <rect width="20" height="20" fill="white" transform="matrix(4.37114e-08 -1 -1 -4.37114e-08 20 20)"/>
+                  </clipPath>
+                </defs>
+              </svg>
+              {% if paginate.next %}
+                </a>
+              {% endif %}
+            </span>
+
+          </div>
+       {% endif %}
+    
+    {% endpaginate %}
+    
+  {% endif %}
+</div>

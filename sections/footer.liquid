@@ -1,0 +1,175 @@
+<style>
+  @media (max-width: 500px) {
+    .footer-nav {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 1rem;
+      margin-top: 0.6rem;
+    }
+
+    .footer-nav a {
+      font-size: {{ section.settings.nav_size_mobile }}px;
+    }
+
+    .footer-nav a:not(:last-child) {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  @media (min-width: 501px) {
+    .footer-nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 0.5rem;
+      margin-top: 0.6rem;
+    }
+
+    .footer-nav a {
+      font-size: {{ section.settings.nav_size_pc }}px;
+    }
+
+    .footer-nav a:not(:last-child) {
+      margin-right: 0.7rem;
+    }
+  }
+
+  .eyecey {
+    margin: 5px 0 16px;
+  }
+
+  {% if settings.eyecey-copy %}
+    .eyecey a {
+      color: inherit;
+    }
+  {% else %}
+    .eyecey a {
+      color: transparent !important;
+    }
+  {% endif %}
+
+  /* Newsletter Styles */
+  .footer-newsletter {
+    max-width: 400px;
+    margin: 2rem auto 1rem;
+    text-align: center;
+  }
+
+  .footer-newsletter .newsletter-label {
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: block;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .footer-newsletter input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    background: #fff;
+  }
+
+  .footer-newsletter .newsletter-button {
+    padding: 10px 20px;
+    font-size: 14px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+</style>
+
+<div class="page-width">
+  <div class="footer-nav">
+    {% if section.settings.footer_display == 'menu' %}
+      {% for link in linklists[section.settings.footer_menu].links %}
+        <a href="{{ link.url }}">{{ link.title }}</a>
+      {% endfor %}
+    {% elsif section.settings.footer_display == 'policies' %}
+      <div class="policies footer-nav">
+        {%- for policy in shop.policies -%}
+          {%- if policy != blank -%}
+            <a href="{{ policy.url }}">{{ policy.title }}</a>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Newsletter Signup -->
+<div class="footer-newsletter">
+  <form method="post" action="{{ routes.root_url }}/contact#contact_form" accept-charset="UTF-8" class="newsletter-form" id="contact_form">
+    <input type="hidden" name="form_type" value="customer" />
+    <input type="hidden" name="utf8" value="✓" />
+    
+    <label for="newsletter-email" class="newsletter-label">Subscribe to our newsletter</label>
+    <input type="email" name="contact[email]" id="newsletter-email" placeholder="Your email address" required>
+    
+    <button type="submit" class="newsletter-button">Subscribe</button>
+  </form>
+</div>
+
+<!-- Copyright -->
+<div class="copyright">
+  <small style="margin: 9px 0;" class="copyright__content">
+    &copy; {{ 'now' | date: '%Y' }}, {{ shop.name | link_to: routes.root_url -}}
+  </small>
+  <small class="copyright__content eyecey">
+    <a href="https://eyecey.com">SITE BY EYECEY</a>
+  </small>
+</div>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    {
+      "type": "select",
+      "id": "footer_display",
+      "label": "Display menu or policies",
+      "info": "To set up policy pages, go to Settings → Policies",
+      "options": [
+        {
+          "value": "menu",
+          "label": "Menu"
+        },
+        {
+          "value": "policies",
+          "label": "Policy Pages"
+        }
+      ],
+      "default": "menu"
+    },
+    {
+      "type": "link_list",
+      "id": "footer_menu",
+      "label": "Footer Menu"
+    },
+    {
+      "type": "range",
+      "id": "nav_size_pc",
+      "label": "Links size (PC view)",
+      "min": 10,
+      "max": 35,
+      "step": 1,
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "nav_size_mobile",
+      "label": "Links size (Mobile view)",
+      "min": 10,
+      "max": 35,
+      "step": 1,
+      "default": 16
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,109 @@
+<style>
+.contact-form-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#contact_form input, #contact_form textarea {
+  padding: 7px 10px;
+  font-size: 15px;
+  margin-bottom: 10px;
+  width: 280px;
+  max-width: 100%;
+  border: 1px solid;
+  border-style: solid;
+  border-radius: 0;
+  /* color: black; */
+  /* text-transform: uppercase; */
+}
+
+#contact-button input{
+  /* background: black; */
+  /* color: white; */
+  text-transform: uppercase;
+  padding: 13px;
+  border-style: hidden;
+}
+
+@media screen and (min-width: 749px){
+  #contact_form input, #contact_form textarea {
+    padding: 10px 10px;
+    font-size: 15px;
+    margin-bottom: 15px;
+    width: 350px;
+}
+}
+</style>
+<div class="page-width">
+<section class="contact-form-section">
+  <form method="post" action="/contact#contact_form" id="contact_form" accept-charset="UTF-8" class="contact-form">
+    <input type="hidden" name="form_type" value="contact">
+    <input type="hidden" name="utf8" value="✓">
+
+
+    <div class="form-field">
+      <!-- <label for="ContactFormName">Name</label> -->
+      <input type="text" class="input-class" id="ContactFormName" name="contact[name]" placeholder="Name" required>
+    </div>
+
+
+    <div class="form-field">
+      <!-- <label for="ContactFormPhone">Phone Number</label> -->
+      <input type="tel" class="input-class" id="ContactFormPhone" name="contact[phone]" placeholder="Phone Number">
+    </div>
+
+
+    <div class="form-field">
+      <!-- <label for="ContactFormEmail">Email</label> -->
+      <input type="email" class="input-class" id="ContactFormEmail" name="contact[email]" placeholder="Email" required>
+    </div>
+
+    <div class="form-field">
+      <!-- <label for="ContactFormMessage">Message</label> -->
+      <textarea id="ContactFormMessage" class="input-class" name="contact[body]" placeholder="Message" rows="10" required></textarea>
+    </div>
+
+    <div class="form-field" id="contact-button">
+      <input class="button" type="submit" value="Send">
+    </div>
+<div id="contactFormMessageContainer" style="display: none;"></div>
+
+  </form>
+  <script>
+document.addEventListener("DOMContentLoaded", function() {
+  const contactForm = document.querySelector(".contact-form");
+
+  contactForm.addEventListener("submit", function(e) {
+    const phoneNumber = document.getElementById("ContactFormPhone").value;
+    const messageContainer = document.createElement("div");
+
+    if (!phoneNumber.startsWith("+")) {
+      e.preventDefault(); // Остановить отправку формы
+      alert("Please include a '+' sign in your phone number.");
+      return false;
+    }
+
+function showMessage() {
+  const messageContainer = document.getElementById("contactFormMessageContainer");
+  messageContainer.textContent = "SENT, WE WILL CONTACT YOU";
+  messageContainer.style.color = "green";
+  messageContainer.style.display = "block"; 
+}
+
+
+    e.preventDefault(); 
+    setTimeout(showMessage, 500); 
+  });
+});
+</script>
+
+</section>
+</div>
+
+{% schema %}
+  {
+    "name": "Contact Form",
+    "settings": []
+  }
+{% endschema %}

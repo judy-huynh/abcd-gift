@@ -1,0 +1,765 @@
+<style>
+  .notify-wrapper {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.notify-me-form {
+  display: flex;
+  gap: 2px;
+  align-items: stretch;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.notify-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.notify-input {
+  padding: 10px;
+  font-size: 14px;
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+  border: 1px solid #000;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.notify-button {
+  background-color: #000;
+  color: #fff;
+  padding: 10px 20px;
+  border: 1px solid #000;
+  font-size: 14px;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+@media (max-width: 400px) {
+  .notify-button {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+}
+
+.notify-success {
+  display: none;
+  font-size: 18px;
+  margin-top: 12px;
+}
+
+/* Colored variant buttons — background matches the color name, white text on top */
+.option-value--color {
+  color: #fff !important;
+  border: 1px solid transparent !important;
+  padding: 8px 16px !important;
+}
+.option-value--color.active {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+.option-value--color.color-pink   { background: #E88BA0; }
+.option-value--color.color-blue   { background: #1E4FA8; }
+.option-value--color.color-black  { background: #000000; }
+.option-value--color.color-white  { background: #FFFFFF; color: #000 !important; border-color: #ccc !important; }
+.option-value--color.color-green  { background: #94A15A; }
+.option-value--color.color-grey,
+.option-value--color.color-gray   { background: #7A7A7A; }
+.option-value--color.color-navy   { background: #3B5998; }
+.option-value--color.color-red    { background: #C0322B; }
+.option-value--color.color-yellow { background: #EFC94C; color: #000 !important; }
+.option-value--color.color-orange { background: #E77A2B; }
+.option-value--color.color-purple { background: #6C4B8E; }
+.option-value--color.color-brown  { background: #6E4B2E; }
+.option-value--color.color-beige  { background: #D8C7A0; color: #000 !important; }
+
+{% if settings.image-switches == 'black' %}
+.cursor-right {
+  cursor: url('{{ 'arrow-right.svg' | asset_url | image_url: '32x32' }}'), auto;
+}
+.cursor-left {
+  cursor: url('{{ 'arrow-left.svg' | asset_url | image_url: '32x32' }}'), auto;
+}
+{% elsif settings.image-switches == 'white' %}
+.cursor-right { 
+  cursor: url('{{ 'arrow-right-white.svg' | asset_url | image_url: '32x32' }}'), auto;
+}
+.cursor-left {
+  cursor: url('{{ 'arrow-left-white.svg' | asset_url | image_url: '32x32' }}'), auto;
+}
+{% endif %}
+.figureImg {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+.product__item-img, .product__item-video {
+  min-width: 100%;
+  height: auto;
+  padding: 1px;
+}
+.image-navigation{
+  display: none;
+}
+{% if product.images.size < 2 %}
+  .product__item-img {
+    cursor: inherit;
+}
+{% endif %}
+
+@media screen and (max-width: 749px){
+.image-navigation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5px;
+  margin-bottom: 1.5rem;
+}
+
+.nav-arrow {
+  cursor: pointer;
+  padding: 10px 0;
+  font-size: 20px;
+}
+
+.nav-dots {
+  display: flex;
+  gap: 5px;
+}
+
+.nav-dot {
+  width: 10px;
+  height: 10px;
+  background-color: {{ settings.product_dot_bg }};
+  border: 1px solid {{ settings.product_dot_active }};
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.nav-dot.active {
+  background-color: {{ settings.product_dot_active }};
+}
+.nav-arrow img {
+    width: 20px;
+    height: 20px;
+    display: block;
+    margin: 0px 15px;
+}
+.figureImg {
+    width: 100% !important;
+    {% if product.images.size > 1 %}
+    padding-bottom: 0rem !important;
+    {% else %}
+    padding-bottom: 1.5rem !important;
+    {% endif %}
+}
+}
+/* ── Size option hover ── */
+.option-value:not(.disabled):not(.active):hover {
+  border: 1px solid #000;
+}
+
+/* ── Gallery browse overlays (desktop only) ── */
+.gallery-overlay-left,
+.gallery-overlay-right {
+  display: none;
+}
+
+@media screen and (min-width: 749px) {
+  .gallery-overlay-left,
+  .gallery-overlay-right {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+    z-index: 6;
+  }
+
+  .gallery-overlay-left {
+    left: 0;
+    justify-content: flex-start;
+    padding-left: 1.25rem;
+  }
+
+  .gallery-overlay-right {
+    right: 0;
+    justify-content: flex-end;
+    padding-right: 1.25rem;
+  }
+
+  .gallery-overlay-left span,
+  .gallery-overlay-right span {
+    color: #000;
+    font-size: 28px;
+    font-weight: 300;
+    line-height: 1;
+  }
+
+.figureImg:hover .gallery-overlay-left,
+  .figureImg:hover .gallery-overlay-right {
+    opacity: 1;
+  }
+}
+
+/* ── Notify submit button ── */
+.notify-submit-btn {
+  background-color: #000;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  transition: opacity 0.2s ease;
+}
+
+.notify-submit-btn:hover {
+  opacity: 0.7;
+}
+
+#AddToCartForm{
+  width: 100%;
+}
+.product-table{
+  max-width: 100%;
+  overflow: scroll;
+}
+
+@media screen and (min-width: 749px){
+  .product-info {
+    margin-top: 0 !important;
+}
+  .figureImg {
+    position: relative;
+}
+  .product__item-img, .product__item-video {
+    max-height: 100%;
+    max-width: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: inherit !important;
+    {% unless product.images.size == 1 %}
+    opacity: 0; 
+    {% endunless %}
+  }
+
+  .product__item-img.active, .product__item-video.active {
+    opacity: 1; 
+  }
+  .product__item-video{
+    z-index: -1;
+  }
+  .product__item-img{
+    z-index: 1;
+  }
+}
+
+
+</style>
+
+<div class="page-width">
+  <div class="product-info">
+    {% assign current_variant = product.selected_or_first_available_variant %}
+    {% assign featured_image = current_variant.featured_image | default: product.featured_image %}
+  
+    <div class="product-info__pc">
+      <h2 class="product-info__title product-info__title-top">{{ product.title }}</h2>
+      {% for block in section.blocks %}
+          {% case block.type %}
+
+         {% when 'item-type' %} 
+            <div class="product-block-content item-type">
+              <h2>
+                {% if block.settings.item-type == 'pre-made' %}
+                  Pre-made
+                {% else %}
+                  Pre-order
+                {% endif %}
+              </h2>
+            </div>
+          {% endcase %}
+      {% endfor %}
+      <div class="product-info__description-pc">{{ product.description }}</div>
+    </div>
+  
+    <div class="figureImg fade-in" id="gallery">
+      {% if product.images.size > 1 %}
+        <div class="gallery-overlay-left"><span>←</span></div>
+        <div class="gallery-overlay-right"><span>→</span></div>
+      {% endif %}
+      {% for image in product.images %}
+      <img class="product__item-img" data-image-id="{{ image.id }}" src="{{ image | img_url: 'master' }}" alt="{{ image.alt | escape }}">
+      {% endfor %}
+
+      {% for media in product.media %}
+      {% if media.media_type == 'video' %}
+      <video class="product__item-video" controls>
+        <source src={{ media | video_tag: controls: true }}
+      </video>
+      {% endif %}
+      {% endfor %}
+    </div>
+
+    {% if product.images.size > 1 or product.media.size > 1 %}
+    <div class="image-navigation" id="image-navigation">
+      <span class="nav-arrow mobile-cursor-left" id="prev-arrow">
+        <img src="
+          {% if settings.image-switches == 'black' %}{{ 'arrow-left.svg' | asset_url | image_url: '32x32' }} {% elsif settings.image-switches == 'white' %}{{ 'arrow-left-white.svg' | asset_url | image_url: '32x32' }} {% endif %}
+        ">
+      </span>
+      <div class="nav-dots" id="nav-dots"></div>
+      <span class="nav-arrow mobile-cursor-right" id="next-arrow">
+        <img src="
+          {% if settings.image-switches == 'black' %}{{ 'arrow-right.svg' | asset_url | image_url: '32x32' }} {% elsif settings.image-switches == 'white' %}{{ 'arrow-right-white.svg' | asset_url | image_url: '32x32' }} {% endif %}
+        ">
+      </span>
+    </div>
+    {% endif %}
+  
+    <div class='product-info__main'>
+      <form action="/cart/add" method="post" enctype="multipart/form-data" id="AddToCartForm">
+        <input type="hidden" name="id" value="{{ current_variant.id }}">
+
+        
+        <div class='product-info__parent'>
+          <div class='product-info__form'>
+            {% for block in section.blocks %}
+              {% case block.type %}
+                 {%- when '@app' -%}
+                  {%- render block -%}                
+                 {% when 'variant-selector' %}
+                  {% if product.variants.size > 1 %}
+                    {% for option in product.options_with_values %}
+                      {%- assign opt_name = option.name | downcase -%}
+                      {%- assign is_color = false -%}
+                      {%- if opt_name == 'color' or opt_name == 'colour' -%}{%- assign is_color = true -%}{%- endif -%}
+                      <div class="product-options">
+                        <div class="option-values">
+                          {% for value in option.values %}
+                            <button type="button" class="option-value{% if is_color %} option-value--color color-{{ value | handleize }}{% endif %}" data-option="{{ option.position }}" data-value="{{ value | escape }}">
+                              {{ value }}
+                            </button>
+                          {% endfor %}
+                        </div>
+                      </div>
+                    {% endfor %}
+                    {% endif %}
+                  {% when 'buy-buttons' %}
+
+                
+                
+                
+                {% if current_variant.available %}
+  <button class='product-info__cart-btn button' type="submit">ADD TO CART — {{ current_variant.price | money }}</button>
+{% else %}
+  <button class='product-info__cart-btn button' id="soldout" type="button" disabled>Sold Out</button>
+{% endif %}
+
+<!-- END OF ADD TO CART FORM -->
+</form> <!-- ← closing tag for #AddToCartForm -->
+
+<!-- Notify Me Form for Sold Out Products -->
+{% unless current_variant.available %}
+  <div class="notify-wrapper">
+    <label for="notify-email" class="notify-label">NOTIFY WHEN RESTOCKED</label>
+    <form method="post" action="/contact#notify" accept-charset="UTF-8" class="notify-me-form">
+      <input type="hidden" name="form_type" value="customer">
+      <input type="hidden" name="utf8" value="✓">
+      <input type="hidden" name="contact[tags]" value="restock request: {{ product.title }}">
+
+      <input type="email" name="contact[email]" id="notify-email" placeholder="Enter your email" required class="notify-input">
+      <button type="submit" class="notify-submit-btn notify-button">SUBMIT</button>
+    </form>
+
+    <div id="notify-success" style="display: none; margin-top: 10px; font-size: 18px;">✅</div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      const posted = urlParams.get("customer_posted");
+      const anchor = window.location.hash;
+
+      if (posted === "true" && anchor === "#notify") {
+        const message = document.getElementById("notify-success");
+        if (message) {
+          message.style.display = "block";
+          message.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    });
+  </script>
+{% endunless %}
+
+
+
+
+                    {% if block.settings.enable_dynamic_checkout %}
+                      {%- form 'product', product -%}
+                        {% comment %}
+                          Automatically inserted by Shop Pay Installments theme updater
+                        {% endcomment %}
+                        {% unless settings.disable_autogenerated_payment_terms %}
+                          {{ form | payment_terms }}
+                        {% endunless %}
+                       {{ form | payment_button }}
+                      {% endform %}
+                    {% endif %}
+                  {% when 'content' %} 
+                  <div class="product-block-content">
+                    <p>{{- block.settings.content -}}</p>
+                  </div>
+              {% endcase %}
+            {% endfor %}
+            
+            
+            
+
+            
+          </div>
+              
+        </div>
+
+        
+        <div class='product-info__description-mobile'>{{ product.description }}</div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const gallery = document.getElementById('gallery');
+  const items = gallery.querySelectorAll('.product__item-img, .product__item-video');
+  const prevArrow = document.getElementById('prev-arrow');
+  const nextArrow = document.getElementById('next-arrow');
+  const navDotsContainer = document.getElementById('nav-dots');
+  let currentIndex = 0;
+
+  const productVariants = {{ product.variants | json }};
+  let currentVariant = {{ product.selected_or_first_available_variant | json }};
+  
+  function scrollToVariantMedia(selectedVariant) {
+    const variantImage = selectedVariant.featured_image;
+    if (!variantImage) return;
+    const targetId = String(variantImage.id);
+    const variantMediaIndex = [...items].findIndex(item =>
+      item.tagName === 'IMG' && item.getAttribute('data-image-id') === targetId
+    );
+    if (variantMediaIndex !== -1 && variantMediaIndex !== currentIndex) {
+      currentIndex = variantMediaIndex;
+      updateMediaPosition();
+    }
+  }
+
+function updateMediaPosition() {
+  if (items.length > 1) {
+    if (window.matchMedia('(min-width: 749px)').matches) {
+      items.forEach((item, index) => {
+        if (index === currentIndex) {
+          item.classList.add('active'); 
+          item.classList.add('fade-in'); 
+          setTimeout(() => {
+            item.classList.remove('fade-in'); 
+          }, 300);
+
+          if (item.tagName === 'VIDEO') {
+            item.play(); 
+          }
+        } else {
+          item.classList.remove('active'); 
+          if (item.tagName === 'VIDEO') {
+            item.pause(); 
+            item.currentTime = 0; 
+          }
+        }
+      });
+      updateCursor(items[currentIndex]);
+    } else {
+      const offset = currentIndex * -100;
+      items.forEach(item => {
+        item.style.transform = `translateX(${offset}%)`;
+        item.style.transition = isTouchDevice() ? 'transform 0.25s ease' : 'none';
+      });
+      if (!isTouchDevice()) {
+        items[currentIndex].classList.add('fade-in');
+        setTimeout(() => {
+          items[currentIndex].classList.remove('fade-in');
+        }, 300);
+      }
+      updateCursor(items[currentIndex]);
+    }
+    updateDots();
+  } else if (items.length === 1) {
+    items[0].classList.add('active');
+    items[0].classList.add('fade-in'); 
+    setTimeout(() => {
+      items[0].classList.remove('fade-in'); 
+    }, 300);
+
+    if (items[0].tagName === 'VIDEO') {
+      items[0].play(); 
+    }
+  }
+}
+
+  function updateDots() {
+    const dots = navDotsContainer.querySelectorAll('.nav-dot');
+    dots.forEach((dot, index) => {
+      dot.classList.toggle('active', index === currentIndex);
+    });
+  }
+
+  function createDots() {
+    items.forEach((item, index) => {
+      const dot = document.createElement('div');
+      dot.classList.add('nav-dot');
+      if (index === currentIndex) {
+        dot.classList.add('active');
+      }
+      dot.addEventListener('click', () => {
+        currentIndex = index;
+        updateMediaPosition();
+      });
+      navDotsContainer.appendChild(dot);
+    });
+  }
+
+  function handleSwipe(direction) {
+    if (direction === 'left') {
+      currentIndex = (currentIndex + 1) % items.length;
+    } else if (direction === 'right') {
+      currentIndex = (currentIndex - 1 + items.length) % items.length;
+    }
+    updateMediaPosition();
+  }
+
+  function handleArrowClick(direction) {
+    if (direction === 'left') {
+      currentIndex = (currentIndex - 1 + items.length) % items.length;
+    } else if (direction === 'right') {
+      currentIndex = (currentIndex + 1) % items.length;
+    }
+    updateMediaPosition();
+  }
+
+  prevArrow.addEventListener('click', () => handleArrowClick('left'));
+  nextArrow.addEventListener('click', () => handleArrowClick('right'));
+
+  function isTouchDevice() {
+    return ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0);
+  }
+
+  gallery.addEventListener('click', function(event) {
+    if (!isTouchDevice()) {
+      const x = event.clientX - gallery.getBoundingClientRect().left;
+      const totalWidth = gallery.offsetWidth;
+      const direction = x < totalWidth / 2 ? 'right' : 'left';
+      handleSwipe(direction);
+    }
+  });
+
+  if (isTouchDevice()) {
+    let touchstartX = 0;
+    let touchendX = 0;
+    gallery.addEventListener('touchstart', function(evt) {
+      touchstartX = evt.touches[0].clientX;
+    }, false);
+
+    gallery.addEventListener('touchmove', function(evt) {
+      touchendX = evt.touches[0].clientX;
+    }, false);
+
+    gallery.addEventListener('touchend', function(evt) {
+      if (touchendX < touchstartX - 50) {
+        handleSwipe('left');
+      } else if (touchendX > touchstartX + 50) {
+        handleSwipe('right');
+      }
+    }, false);
+  }
+
+  const cursorLeft = "url('{% if settings.image-switches == 'black' %}{{ 'arrow-left.svg' | asset_url | image_url: '32x32' }}{% elsif settings.image-switches == 'white' %}{{ 'arrow-left-white.svg' | asset_url | image_url: '32x32' }}{% endif %}'), auto";
+  const cursorRight = "url('{% if settings.image-switches == 'black' %}{{ 'arrow-right.svg' | asset_url | image_url: '32x32' }}{% elsif settings.image-switches == 'white' %}{{ 'arrow-right-white.svg' | asset_url | image_url: '32x32' }}{% endif %}'), auto";
+
+  createDots();
+  updateMediaPosition();
+
+  items.forEach((item) => {
+    item.addEventListener('mousemove', function(event) {
+      updateCursor(this);
+    });
+  });
+
+  function updateCursor(itemElement) {
+    // Custom left/right arrow cursors disabled — the visible ← → arrows already indicate navigation
+    itemElement.style.cursor = items.length > 1 ? 'pointer' : 'auto';
+    return;
+    if (items.length > 1) {
+      const rect = itemElement.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      itemElement.style.cursor = x < rect.width / 2 ? cursorLeft : cursorRight;
+    } else {
+      itemElement.style.cursor = "auto";
+    }
+  }
+
+  // Find the matching variant based on ALL currently-selected option buttons,
+  // then swap the gallery image. Works no matter which position color/size sits in.
+  function getSelectedOptionValues() {
+    const selected = {};
+    document.querySelectorAll('.option-value.active').forEach(btn => {
+      const pos = btn.getAttribute('data-option');
+      const val = btn.getAttribute('data-value');
+      selected[`option${pos}`] = val;
+    });
+    return selected;
+  }
+
+  function findVariantFromSelection() {
+    const selected = getSelectedOptionValues();
+    return productVariants.find(v =>
+      Object.keys(selected).every(k => v[k] === selected[k])
+    );
+  }
+
+  const variantButtons = document.querySelectorAll('.option-value');
+  variantButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      // theme.liquid's handler runs first and updates `.active` classes.
+      // Defer one tick so our read of active buttons sees the new state.
+      setTimeout(() => {
+        const selectedVariant = findVariantFromSelection();
+        if (selectedVariant) {
+          scrollToVariantMedia(selectedVariant);
+        }
+      }, 0);
+    });
+  });
+
+  updateMediaPosition();
+
+});
+</script>
+<script>
+  document.querySelectorAll('table').forEach(function(table) {
+  var wrapper = document.createElement('div');
+  wrapper.classList.add('product-table');
+
+  table.parentNode.insertBefore(wrapper, table);
+
+  wrapper.appendChild(table);
+});
+
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    function setProductInfoHeight() {
+      
+      if (window.matchMedia('(min-width: 749px)').matches) {
+       
+        var header = document.getElementById('shopify-section-header');
+        var productInfo = document.querySelector('.product-info');
+        
+        if (header && productInfo) {
+          var headerHeight = header.offsetHeight;
+          
+          productInfo.style.height = `calc(95vh - ${headerHeight}px)`;
+        }
+      } else {
+        var productInfo = document.querySelector('.product-info');
+        if (productInfo) {
+          productInfo.style.height = ''; 
+        }
+      }
+    }
+
+    setProductInfoHeight();
+
+    window.addEventListener('resize', setProductInfoHeight);
+  });
+</script>
+
+{% schema %}
+  {
+    "name": "Product Page",
+    "settings": [],
+    "blocks": [
+      {
+        "type": "content",
+        "name": "Content",
+        "settings": [
+          {
+            "type": "text",
+            "id": "content",
+            "label": "Content",
+            "default": "*CONTENT HERE*"
+          }
+        ]
+      },
+      {
+        "type": "item-type",
+        "name": "Item Type",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "paragraph",
+            "content": "Select whether this is Pre-made or Pre-order. Will be displayed below the product name"
+          },
+          {
+            "type": "select",
+            "id": "item-type",
+            "label": "Content",
+            "options": [
+              {
+                "label": "Pre-made",
+                "value": "pre-made"
+              },
+              {
+                "label": "Pre-order",
+                "value": "pre-order"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "@app"
+      },
+      {
+        "type": "variant-selector",
+        "name": "Variant Selector",
+        "limit": 1
+      },
+      {
+        "type": "buy-buttons",
+        "name": "Buy Buttons",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "checkbox",
+            "id": "enable_dynamic_checkout",
+            "label": "Show dynamic checkout buttons",
+            "info": "Using the payment methods available on your store, customers see their preferred option, like PayPal or Apple Pay."
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

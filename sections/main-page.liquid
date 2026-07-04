@@ -1,0 +1,51 @@
+<style>
+  .page-title {
+    text-align: left;
+    margin-top: 2rem;
+    margin-bottom: 1rem; /* tightened spacing */
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .main-page,
+  .page-width,
+  .faq-container {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  .main-page-content {
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.5rem;
+  }
+
+  .faq-container h2 {
+    margin-top: 1.5rem; /* reduce spacing above each section heading */
+  }
+
+  .main-page img {
+    max-width: 100%;
+  }
+</style>
+
+<div class="page-width">
+  <div class="main-page section-{{ section.id }}">
+    <div class="faq-container">
+      <h1 class="page-title">
+        {{ page.title | escape }}
+      </h1>
+      <div class="main-page-content">
+        {{ page.content }}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Page Content",
+  "settings": []
+}
+{% endschema %}

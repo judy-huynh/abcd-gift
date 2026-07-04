@@ -1,0 +1,145 @@
+<style>
+  .account-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .account-title{
+    margin-bottom: 40px;
+  }
+  .account-input{
+    display: block;
+    max-width: 100%;
+    width: 100%;
+    padding: 11px 18px;
+    font-size: 14px;
+    border: 1px solid;
+    border-radius: 0;
+    margin-bottom: 20px;
+  }
+  #forgot_password {
+    text-align: right;
+    font-size: 15px;
+    margin-bottom: 20px;
+  }
+  .account-button{
+    width: 100%;
+    padding: 12px 18px;
+    height: auto;
+    cursor: pointer;
+    min-height: 100%;
+    border: none;
+    border-radius: 0;
+    font-family: var(--font-heading-family) !important;
+    font-style: var(--font-heading-style) !important;
+    font-weight: var(--font-heading-weight) !important;
+    font-size: 16px;
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+  }
+  .account-button-second{
+    border: 1px solid {{ settings.headings-color }};
+  }
+  #customer_login{
+    width: 100%;
+  }
+  #recover-password form{
+    width: 100%;
+  }
+</style>
+
+<div id="template" class="page-width">
+  <div id="customer" class="account-container">
+    <div class="template_header">
+      <h1 class="account-title title">Customer Login</h1>
+    </div>
+
+    {% form 'customer_login' %}
+      {{ form.errors | default_errors }}
+
+      <div id="login_email" class="clearfix large_form">
+        <!-- <label for="customer_email" class="login">Email Address</label> -->
+        <input type="email" placeholder="Your Email" value="" name="customer[email]" id="customer_email" class="input-class account-input" class="large" size="30" />
+      </div>
+
+      {% if form.password_needed %}
+
+        <div id="login_password" class="clearfix large_form">
+          <!-- <label for="customer_password" class="login">Password</label> -->
+          <input type="password" placeholder="Password" value="" name="customer[password]" id="customer_password" class="input-class account-input" class="large password" size="16" />
+          <div id="forgot_password">
+            <a href="#" onclick="showRecoverPasswordForm();return false;">Forgot your password?</a>
+          </div>
+        </div>
+
+      {% endif %}
+
+      <div class="action_bottom">
+        <input class="button account-button" type="submit" value="Sign In" />
+      </div>
+      <div class="action_bottom">
+        <a href="/account/register" class="account-button account-button-second">Register</a>
+      </div>
+    {% endform %}
+  </div>
+
+<style>
+  .account-note{
+    margin-bottom: 15px;
+  }
+  .template_header{
+    width: 100%;
+    text-align: center;
+  }
+</style>
+  <div id="recover-password" class="account-container" style='display:none'>
+    <div class="template_header">
+      <h1 class="account-title title">Reset Password</h1>
+      <p class="account-note note">We will send you an email to reset your password.</p>
+    </div>
+
+    {% form 'recover_customer_password' %}
+      {{ form.errors | default_errors }}
+
+      <div id="recover_email" class="clearfix large_form">
+        <!-- <label for="email" class="large">Email</label> -->
+        <input type="email" value="" placeholder="Email" size="30" name="email" id="recover-email" class="input-class account-input" class="large" />
+      </div>
+      <div class="action_bottom">
+        <input class="button account-button" type="submit" value="Submit" />
+        <span class="note account-button account-button-second"><a style="display: block; width: 100%;" href="#" onclick="hideRecoverPasswordForm();return false;">Back to login</a></span>
+      </div>
+    {% endform %}
+  </div>
+
+  {% if shop.checkout.guest_login %}
+  <div id="guest">
+    <div class="template_header">
+      <h3 class="title">Guest Login</h3>
+    </div>
+    {% form 'guest_login' %}
+      <input class="btn" type="submit" value="Continue as Guest" />
+    {% endform %}
+  </div>
+  {% endif %}
+</div>
+
+
+<script type="text/javascript">
+  function showRecoverPasswordForm() {
+    document.getElementById('recover-password').style.display = 'flex';
+    document.getElementById('customer').style.display='none';
+  }
+
+  function hideRecoverPasswordForm() {
+    document.getElementById('recover-password').style.display = 'none';
+    document.getElementById('customer').style.display = 'flex';
+  }
+
+  if (window.location.hash == '#recover') { showRecoverPasswordForm() }
+</script>

@@ -1,0 +1,29 @@
+<style>
+  .custom-liquid{
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+</style>
+<div class="page-width">
+  <div class="custom-liquid">
+      {{ section.settings.custom_liquid }}
+  </div>
+</div>
+{% schema %}
+  {
+    "name": "Custom Liquid/HTML",
+    "settings": [
+      {
+        "type": "liquid",
+        "id": "custom_liquid",
+        "label": "Liquid/HTML code",
+        "info": "Add app snippets or other code to create advanced customizations"
+      }
+    ],
+  "presets": [
+    {
+      "name": "Custom Liquid/HTML"
+    }
+  ]
+}
+{% endschema %}

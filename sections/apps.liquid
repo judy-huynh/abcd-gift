@@ -1,0 +1,31 @@
+<style>
+  .app-cont{
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+</style>
+<div class="page-width">
+  <div class="app-cont">
+    {%- for block in section.blocks -%}
+      {% render block %}
+    {%- endfor -%}
+  </div>
+</div>
+{% schema %}
+{
+  "name": "Apps",
+  "tag": "section",
+  "class": "section",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "@app"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Apps"
+    }
+  ]
+}
+{% endschema %}

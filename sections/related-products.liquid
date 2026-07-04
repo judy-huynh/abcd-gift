@@ -1,0 +1,129 @@
+<style>
+{% unless section.settings.related_show %}
+.related-products{
+  display: none;
+}
+{% endunless %}
+.related-products {
+   margin-top: 12rem;
+  margin-bottom: 6rem;
+}
+
+.related-name {
+  padding-bottom: 2rem;
+}
+
+.related-products__list {
+  display: flex;
+  overflow-x: auto;
+  align-items: flex-start;
+  -webkit-overflow-scrolling: touch; 
+  margin: 0 -15px;
+}
+
+.related-products .product-list__product-block {
+  flex: 0 0 auto;
+  width: 50%;
+  padding: 10px;
+}
+
+.related-products .product-list__product-block {
+  transition: transform 0.4s ease;
+}
+
+.related-products .product-list__product-block:hover {
+  transform: scale(1.03);
+}
+@media (min-width: 750px) {
+  .related-products .product-list__product-block {
+    width: 25%; 
+  }
+}
+</style>
+
+{% assign related_products_count = 0 %}
+{% assign current_product_url = product.url %}
+{% assign products_to_display = 4 %}
+{% assign displayed_products = '' %}
+
+{% if product.collections.size > 0 %}
+  {% assign main_collection = product.collections.first %}
+  {% assign related_products = main_collection.products %}
+{% else %}
+  {% assign related_products = collections['all'].products %}
+{% endif %}
+
+{% for related_product in related_products %}
+  {% unless displayed_products contains related_product.url %}
+    {% if related_product.url != current_product_url %}
+      {% assign available = false %}
+      {% for variant in related_product.variants %}
+        {% if variant.inventory_policy == 'continue' or variant.inventory_management == nil or variant.inventory_quantity > 0 %}
+          {% assign available = true %}
+          {% break %}
+        {% endif %}
+      {% endfor %}
+      {% if available %}
+        {% assign related_products_count = related_products_count | plus: 1 %}
+        {% assign displayed_products = displayed_products | append: related_product.url | append: ',' %}
+      {% endif %}
+      {% if related_products_count >= products_to_display %}
+        {% break %}
+      {% endif %}
+    {% endif %}
+  {% endunless %}
+{% endfor %}
+
+
+
+{% if related_products_count > 0 %}
+  <div class="page-width">
+    <div class="related-products">
+      <h2 class="related-name">Related</h2>
+      <div class="related-products__list">
+        {% assign related_products_added = 0 %}
+        {% for related_product in related_products %}
+          {% if related_products_added < products_to_display %}
+            {% if displayed_products contains related_product.url %}
+              {% assign available = false %}
+              {% for variant in related_product.variants %}
+                {% if variant.inventory_policy == 'continue' or variant.inventory_management == nil or variant.inventory_quantity > 0 %}
+                  {% assign available = true %}
+                  {% break %}
+                {% endif %}
+              {% endfor %}
+              {% if available %}
+                <div class='product-list__product-block fade-in'>
+                  <a class='product-list__img-link' href='{{ related_product.url }}'>
+                    <img class='product-list__product-img' src='{{ related_product | img_url: 'master' }}' onload="this.closest('.product-list__product-block').classList.add('loaded')">
+                  </a>
+                  <a class='product-list__product-name' href='{{ related_product.url }}'>{{ related_product.title }}</a>
+                  {% if related_product.compare_at_price > related_product.price %}
+                    <p class='product-list__product-price'>{{ related_product.price | money_with_currency }}<span><strike style="margin-left: 10px;">{{ related_product.compare_at_price | money_with_currency }}</strike></span></p>
+                  {% else %}
+                    <p class='product-list__product-price'>{{ related_product.price | money_with_currency }}</p>
+                  {% endif %}
+                </div>
+                {% assign related_products_added = related_products_added | plus: 1 %}
+              {% endif %}
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+{% schema %}
+  {
+    "name": "Related products",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "related_show",
+        "default": true,
+        "label": "Show related section"
+      }
+    ]
+  }
+{% endschema %}

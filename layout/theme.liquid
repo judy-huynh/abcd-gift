@@ -1,0 +1,291 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="">
+    
+    {%- if settings.favicon != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+    {%- endif -%}
+    
+    <link rel="canonical" href="{{ canonical_url }}">
+    <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+    <link type="text/css" href="{{ 'main.css' | asset_url }}" rel="stylesheet">
+    <link type="text/css" href="{{ 'styles.css' | asset_url }}" rel="stylesheet">
+    {%- unless settings.type_header_font.system? and settings.type_body_font.system? -%}
+      <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+    {%- endunless -%}
+
+    <title>
+      {{ page_title }}
+      {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
+      {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
+      {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+    </title>
+
+    {% if page_description %}
+      <meta name="description" content="{{ page_description | escape }}">
+    {% endif %}
+
+    {% render 'meta-tags' %}
+     {{ content_for_header }}
+    
+      {%- liquid
+        assign body_font_bold = settings.type_body_font | font_modify: 'weight', 'bold'
+        assign body_font_italic = settings.type_body_font | font_modify: 'style', 'italic'
+        assign body_font_bold_italic = body_font_bold | font_modify: 'style', 'italic'
+      %}
+  
+      {% style %}
+        {{ settings.type_body_font | font_face: font_display: 'swap' }}
+        {{ body_font_bold | font_face: font_display: 'swap' }}
+        {{ body_font_italic | font_face: font_display: 'swap' }}
+        {{ body_font_bold_italic | font_face: font_display: 'swap' }}
+        {{ settings.type_header_font | font_face: font_display: 'swap' }}
+      :root {
+        {% if settings.enable_custom_body_font %}
+        --font-body-family: Custom-Font-Body;
+        {% else %}
+        --font-body-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
+        {% endif %}
+        --font-body-style: {{ settings.type_body_font.style }};
+        --font-body-weight: {{ settings.type_body_font.weight }};
+        --font-body-weight-bold: {{ settings.type_body_font.weight | plus: 300 | at_most: 1000 }};
+
+        {% if settings.enable_custom_headings_font %}
+        --font-heading-family: Custom-Font-Headings;
+        {% else %}
+        --font-heading-family: {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
+        {% endif %}
+        --font-heading-style: {{ settings.type_header_font.style }};
+        --font-heading-weight: {{ settings.type_header_font.weight }};
+      }
+    h1, h2, h3, h4, h5, .header-logo-text, .copyright__content, .copyright__content a, .menu-item, .product-list__product-name, .right-nav, .right-nav > *, .option-value, .product-info__cart-btn, #contact-button input, input.search-button, .action_bottom, .account-button, .shop-all-button-404, .cart__total, .cart__submit-btn, .cart__item-remove-link, #CartCount, .pages > *, .number_pages > *, .custom-button, .footer-nav{
+      font-family: var(--font-heading-family) !important;
+      font-style: var(--font-heading-style) !important;
+      font-weight: var(--font-heading-weight) !important;
+      text-transform: 
+      {% if settings.font_transform == 'uppercase' %}
+        uppercase
+      {% elsif settings.font_transform == 'lowercase' %}
+        lowercase
+      {% elsif settings.font_transform == 'standart' %}
+        none
+      {% else %}
+        none
+      {% endif %} !important;
+    }
+
+    p, span, input, textarea, #collections-listing ul li, #contactFormMessageContainer, body{
+      font-family: var(--font-body-family) !important;
+      font-style: var(--font-body-style) !important;
+      font-weight: var(--font-body-weight) !important;
+      text-transform: 
+      {% if settings.font_transform_body == 'uppercase' %}
+        uppercase
+      {% elsif settings.font_transform_body == 'lowercase' %}
+        lowercase
+      {% elsif settings.font_transform_body == 'standart' %}
+        none
+      {% else %}
+        none
+      {% endif %} !important;
+    }
+    @font-face {
+      font-family: 'Custom-Font-Headings';
+      src: url('{{ settings.custom_heading_font }}') format('woff2'),
+           url('{{ settings.custom_heading_font }}') format('woff');
+    }
+    @font-face {
+      font-family: 'Custom-Font-Body';
+      src: url('{{ settings.custom_body_font }}') format('woff2'),
+           url('{{ settings.custom_body_font }}') format('woff');
+    }
+
+      {% endstyle %}
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-16940352158">
+</script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-16940352158');
+</script>
+  </head>
+  <body>
+    <div class="imgbg"></div>
+    {% section 'header' %}
+     <main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1">
+      {{ content_for_layout }}
+    </main>
+    {% section 'footer' %}
+
+    
+<script>
+var currencySymbol = "{{ cart.currency.symbol }}";
+
+document.addEventListener('DOMContentLoaded', function() {
+  const productVariants = {{ product.variants | json }};
+  let selectedOptions = {};
+
+  initializeSelections();
+  updateOptionsAvailability(); 
+  updateCartCount();
+
+  document.getElementById('AddToCartForm').addEventListener('submit', function(event) {
+    event.preventDefault(); 
+    const variantId = document.querySelector('#AddToCartForm input[name="id"]').value;
+    const quantity = 1; 
+
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: variantId,
+        quantity: quantity
+      })
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error('ERROR NOT ADDED TO CART');
+      }
+    })
+    .then(data => {
+      updateCartCount();
+      window.location.href = "/cart"; 
+    })
+    .catch((error) => {
+      console.error('ERROR NOT ADDED TO CART: ', error);
+    });
+  });
+  
+  document.querySelectorAll('.option-value').forEach(button => {
+    button.addEventListener('click', function() {
+      // Allow clicks on sold-out variants so users can still browse thumbnails.
+      // updateVariantAndPrice will keep the cart button in SOLD OUT state.
+      const optionIndex = this.getAttribute('data-option');
+      const value = this.getAttribute('data-value');
+      selectedOptions[`option${optionIndex}`] = value;
+
+      updateActiveStates();
+      updateOptionsAvailability();
+      updateVariantAndPrice();
+    });
+  });
+
+  function updateVariantAndPrice() {
+    const matchingVariant = findMatchingVariant();
+    if (matchingVariant) {
+      document.getElementById('AddToCartForm').action = '/cart/add';
+      document.querySelector('#AddToCartForm input[name="id"]').value = matchingVariant.id;
+      const formattedPrice = formatPrice(matchingVariant.price);
+      document.querySelector('.product-info__cart-btn').disabled = false;
+      document.querySelector('.product-info__cart-btn').innerHTML = `ADD TO CART — ${formattedPrice}`;
+    } else {
+      document.querySelector('.product-info__cart-btn').disabled = true;
+      document.querySelector('.product-info__cart-btn').innerHTML = `SOLD OUT`;
+    }
+  }
+
+  function findMatchingVariant() {
+    return productVariants.find(variant =>
+      Object.keys(selectedOptions).every(option =>
+        variant[option] === selectedOptions[option]
+      ) && variant.available
+    );
+  }
+
+  function formatPrice(priceInCents) {
+  var val = priceInCents / 100;
+  return val % 1 === 0 ? String(val) : val.toFixed(2);
+}
+
+
+  function initializeSelections() {
+    var firstAvailableVariant = productVariants.find(v => v.available);
+
+    if (firstAvailableVariant) {
+      firstAvailableVariant.options.forEach((optionValue, index) => {
+        let optionIndex = index + 1;
+        let optionButtons = document.querySelectorAll(`.option-value[data-option="${optionIndex}"]`);
+        optionButtons.forEach(button => {
+          if (button.getAttribute('data-value') === optionValue) {
+            button.classList.add('active');
+          }
+        });
+        selectedOptions[`option${optionIndex}`] = optionValue;
+      });
+
+      updateOptionsAvailability();
+      updateVariantAndPrice();
+    }
+  }
+
+  function updateActiveStates() {
+    document.querySelectorAll('.option-value').forEach(button => {
+      const optionIndex = button.getAttribute('data-option');
+      if (selectedOptions[`option${optionIndex}`] === button.getAttribute('data-value')) {
+        button.classList.add('active');
+      } else {
+        button.classList.remove('active');
+      }
+    });
+  }
+
+function updateOptionsAvailability() {
+    const allVariantsSoldOut = !productVariants.some(variant => variant.available);
+    const addToCartButton = document.querySelector('.product-info__cart-btn');
+    if (allVariantsSoldOut) {
+      addToCartButton.textContent = 'SOLD OUT';
+      addToCartButton.disabled = true;
+      document.querySelectorAll('.option-value').forEach(button => {
+        button.classList.add('disabled');
+      });
+    } else {
+      document.querySelectorAll('.option-value').forEach(button => {
+        const optionIndex = button.getAttribute('data-option');
+        const value = button.getAttribute('data-value');
+        const isAvailable = productVariants.some(variant => {
+          let matchesOtherSelectedOptions = true;
+          Object.keys(selectedOptions).forEach(selectedOptionIndex => {
+            if (selectedOptionIndex !== `option${optionIndex}`) {
+              matchesOtherSelectedOptions = matchesOtherSelectedOptions && (variant[selectedOptionIndex] === selectedOptions[selectedOptionIndex]);
+            }
+          });
+          return matchesOtherSelectedOptions && variant.available && variant[`option${optionIndex}`] === value;
+        });
+        if (!isAvailable) {
+          button.classList.add('disabled');
+        } else {
+          button.classList.remove('disabled');
+        }
+      });
+    }
+  }
+  function updateCartCount() {
+  fetch('/cart.js')
+    .then(response => response.json())
+    .then(cart => {
+        const cartCount = cart.item_count; 
+        const cartCountElement = document.getElementById('CartCount');
+        if (cartCountElement) {
+            cartCountElement.textContent = cartCount; 
+        }
+    })
+    .catch(error => {
+        console.error('ERROR ADDING TO CART: ', error);
+    });
+}
+
+});
+</script>
+  </body>
+</html>

@@ -1,0 +1,109 @@
+{% schema %}
+{
+  "name": "Newsletter Signup",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Newsletter"
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  .newsletter-section {
+    max-width: 500px;
+    margin: 3rem auto;
+    padding: 0 1rem;
+    text-align: center;
+  }
+
+  .newsletter-section .newsletter-label {
+    font-weight: 600;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  /* Inline layout: email input + subscribe button side by side */
+  .newsletter-section .newsletter-form {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+  }
+
+  .newsletter-section input[type="email"] {
+    flex: 1;
+    min-width: 0;
+    padding: 12px;
+    font-size: 15px;
+    margin-bottom: 0;
+    border: 1px solid #ccc;
+    background: #fff;
+    box-sizing: border-box;
+  }
+
+  .newsletter-section .newsletter-button {
+    padding: 12px 24px;
+    font-size: 14px;
+    background-color: #000;
+    color: #fff;
+    border: 1px solid #000;
+    cursor: pointer;
+    text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 400px) {
+    .newsletter-section .newsletter-button {
+      padding: 12px 14px;
+      font-size: 12px;
+    }
+  }
+
+  #newsletter-success {
+    font-size: 14px;
+    line-height: 1.5;
+    margin-top: 1rem;
+    padding: 12px 16px;
+    font-weight: 600;
+    color: #1a6b1a;
+    background: #f0faf0;
+    border: 1px solid #c6e6c6;
+    border-radius: 2px;
+    display: none;
+  }
+</style>
+
+<div class="newsletter-section" id="newsletter">
+  <label for="newsletter-email" class="newsletter-label">Join Our List</label>
+  <form method="post" action="/contact#newsletter" accept-charset="UTF-8" class="newsletter-form">
+    <input type="hidden" name="form_type" value="customer" />
+    <input type="hidden" name="utf8" value="✓" />
+    <input type="hidden" name="contact[tags]" value="newsletter" />
+
+    <input type="email" name="contact[email]" id="newsletter-email" placeholder="Enter your email" required>
+    <button type="submit" class="newsletter-button">Subscribe</button>
+  </form>
+
+  <div id="newsletter-success">You're on the list! Check your inbox (and junk folder) for a confirmation.</div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const posted = urlParams.get("customer_posted");
+    const anchor = window.location.hash;
+
+    if (posted === "true" && anchor === "#newsletter") {
+      const message = document.getElementById("newsletter-success");
+      if (message) {
+        message.style.display = "block";
+        message.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  });
+</script>

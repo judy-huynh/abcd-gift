@@ -1,0 +1,71 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "featured-collection": {
+      "type": "featured-collection",
+      "custom_css": [],
+      "settings": {
+        "collection_handle": "frontpage",
+        "products_per_page": 20,
+        "collection-title": "",
+        "margin-top": 0,
+        "margin-bottom": 0
+      }
+    },
+    "button_qJbcBX": {
+      "type": "button",
+      "disabled": true,
+      "settings": {
+        "button-link": "shopify://collections/all",
+        "text": "SHOP ALL"
+      }
+    },
+    "newsletter_RYmzbr": {
+      "type": "newsletter",
+      "settings": {}
+    },
+    "1783095013a413abde": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_28fb420_nPgfrB": {
+          "type": "ai_gen_block_28fb420",
+          "settings": {
+            "footer_image": "shopify://shop_images/ABCD-Logo.svg",
+            "image_width": 1600,
+            "image_width_mobile": 300,
+            "image_alignment": "center",
+            "desktop_width_percent": 100,
+            "background_color": "#ffffff",
+            "padding_top": 20,
+            "padding_bottom": 20,
+            "padding_horizontal": 30,
+            "padding_top_mobile": 15,
+            "padding_bottom_mobile": 15,
+            "padding_horizontal_mobile": 20
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_28fb420_nPgfrB"
+      ],
+      "custom_css": [],
+      "name": "Footer",
+      "settings": {}
+    }
+  },
+  "order": [
+    "featured-collection",
+    "button_qJbcBX",
+    "newsletter_RYmzbr",
+    "1783095013a413abde"
+  ]
+}

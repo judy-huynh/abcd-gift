@@ -1,0 +1,49 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "product-main",
+      "blocks": {
+        "variant_selector_tAbBwb": {
+          "type": "variant-selector",
+          "settings": {}
+        },
+        "buy_buttons_m3GwJg": {
+          "type": "buy-buttons",
+          "settings": {
+            "enable_dynamic_checkout": false
+          }
+        }
+      },
+      "block_order": [
+        "variant_selector_tAbBwb",
+        "buy_buttons_m3GwJg"
+      ],
+      "settings": {}
+    },
+    "product-recommendations": {
+      "type": "related-products",
+      "settings": {
+        "related_show": false
+      }
+    },
+    "newsletter_q7yWwL": {
+      "type": "newsletter",
+      "disabled": true,
+      "settings": {}
+    }
+  },
+  "order": [
+    "main",
+    "product-recommendations",
+    "newsletter_q7yWwL"
+  ]
+}

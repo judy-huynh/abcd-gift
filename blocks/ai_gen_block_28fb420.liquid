@@ -1,0 +1,272 @@
+{% doc %}
+  @prompt
+    add a footer with an image using the same header image. header and footer should essentually be the same duplicate section sans the menu links, make the footer image width 1600px like the header
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-footer-{{ ai_gen_id }} {
+    width: 100%;
+    display: block;
+    background-color: {{ block.settings.background_color }};
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 999;
+    box-shadow: 0 -2px 6px rgba(0,0,0,0.04);
+  }
+
+  .ai-footer-container-{{ ai_gen_id }} {
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: {{ block.settings.padding_top }}px {{ block.settings.padding_horizontal }}px {{ block.settings.padding_bottom }}px;
+  }
+
+  .ai-footer-image-wrapper-{{ ai_gen_id }} {
+    width: 100%;
+    display: flex;
+    justify-content: {{ block.settings.image_alignment }};
+    align-items: center;
+  }
+
+  .ai-footer-image-{{ ai_gen_id }} {
+    max-width: {{ block.settings.image_width }}px;
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .ai-footer-placeholder-{{ ai_gen_id }} {
+    max-width: {{ block.settings.image_width }}px;
+    width: 100%;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .ai-footer-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: auto;
+  }
+
+  .ai-footer-empty-state-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 20px;
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-footer-container-{{ ai_gen_id }} {
+      padding: {{ block.settings.padding_top_mobile }}px {{ block.settings.padding_horizontal_mobile }}px {{ block.settings.padding_bottom_mobile }}px;
+    }
+
+    /* Mirror the header on mobile: fill viewport width, don't cap at a fixed px */
+    .ai-footer-image-{{ ai_gen_id }},
+    .ai-footer-placeholder-{{ ai_gen_id }} {
+      max-width: 100%;
+      width: 100%;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-footer-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-footer-container-{{ ai_gen_id }}">
+    <div class="ai-footer-image-wrapper-{{ ai_gen_id }}">
+      {% if block.settings.footer_image %}
+        <img
+          src="{{ block.settings.footer_image | image_url: width: 2000 }}"
+          alt="{{ block.settings.footer_image.alt | escape }}"
+          loading="lazy"
+          width="{{ block.settings.footer_image.width }}"
+          height="{{ block.settings.footer_image.height }}"
+          class="ai-footer-image-{{ ai_gen_id }}"
+        >
+      {% else %}
+        <div class="ai-footer-placeholder-{{ ai_gen_id }}">
+          {{ 'image' | placeholder_svg_tag }}
+          <div class="ai-footer-empty-state-{{ ai_gen_id }}">
+            Add your footer image
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+  // Reserve space at the bottom of the page so the sticky footer doesn't cover content
+  (function() {
+    function reserveFooterSpace() {
+      var footer = document.querySelector('.ai-footer-{{ ai_gen_id }}');
+      var main = document.getElementById('MainContent');
+      if (!footer || !main) return;
+      main.style.paddingBottom = footer.offsetHeight + 'px';
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', reserveFooterSpace);
+    } else {
+      reserveFooterSpace();
+    }
+    window.addEventListener('resize', reserveFooterSpace);
+    window.addEventListener('load', reserveFooterSpace);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Footer image",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "footer_image",
+      "label": "Footer image"
+    },
+    {
+      "type": "range",
+      "id": "image_width",
+      "label": "Image width (desktop)",
+      "min": 100,
+      "max": 1600,
+      "step": 50,
+      "unit": "px",
+      "default": 1600
+    },
+    {
+      "type": "range",
+      "id": "image_width_mobile",
+      "label": "Image width (mobile)",
+      "min": 80,
+      "max": 600,
+      "step": 10,
+      "unit": "px",
+      "default": 400
+    },
+    {
+      "type": "select",
+      "id": "image_alignment",
+      "label": "Image alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "flex-end",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Spacing (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "label": "Horizontal padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Spacing (mobile)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top padding",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_mobile",
+      "label": "Horizontal padding",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 15
+    }
+  ],
+  "presets": [
+    {
+      "name": "Footer image"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,311 @@
+<style>
+  .account-title {
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 50px;
+  }
+
+  div#address_tables {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .address_table {
+    margin: 10px 10px;
+  }
+
+  .customer_address {
+    width: fit-content;
+    padding: 30px 40px;
+    border: 1px solid {{ settings.body-color }};
+    height: 100%;
+    min-width: 300px;
+    margin: 0 auto;
+  }
+
+  .view_address {
+    font-size: 13px;
+  }
+
+  p.address_actions {
+    display: flex;
+  }
+
+  .edit-button {
+    display: block;
+    margin-top: 20px;
+    width: fit-content;
+    padding: 12px 18px;
+    cursor: pointer;
+    border: none;
+    font-family: var(--font-heading-family) !important;
+    font-style: var(--font-heading-style) !important;
+    font-weight: var(--font-heading-weight) !important;
+    font-size: 16px;
+    white-space: nowrap;
+  }
+
+  .action_delete input{
+    display: block;
+    margin-top: 20px;
+    width: fit-content;
+    padding: 11px 18px;
+    cursor: pointer;
+    font-family: var(--font-heading-family) !important;
+    font-style: var(--font-heading-style) !important;
+    font-weight: var(--font-heading-weight) !important;
+    font-size: 16px;
+    white-space: nowrap;
+    border: 1px solid;
+    margin-left: 10px;
+    background: none;
+  }
+
+  .action_top {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 50px;
+  }
+
+  .return-button,
+  .add-new-button {
+    display: block;
+    margin-top: 20px;
+    width: fit-content;
+    padding: 12px 18px;
+    cursor: pointer;
+    border: none;
+    font-family: var(--font-heading-family) !important;
+    font-style: var(--font-heading-style) !important;
+    font-weight: var(--font-heading-weight) !important;
+    font-size: 16px;
+    white-space: nowrap;
+  }
+
+  .add-new-button {
+    border: 1px solid;
+    margin-left: 10px;
+  }
+  .address_actions {
+    display: flex;
+    flex-direction: row;
+  }
+  .address_form{
+    display: block;
+    max-width: 100%;
+    width: 100%;
+    padding: 11px 18px;
+    font-size: 14px;
+    border: 1px solid {{ settings.body-color }};
+    border-radius: 0;
+    margin-bottom: 10px;
+  }
+    .account-button{
+    width: 100%;
+    padding: 12px 18px;
+    height: auto;
+    cursor: pointer;
+    min-height: 100%;
+    border: none;
+    border-radius: 0;
+    font-family: var(--font-heading-family) !important;
+    font-style: var(--font-heading-style) !important;
+    font-weight: var(--font-heading-weight) !important;
+    font-size: 16px;
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+  }
+  h3#add_address_title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+</style>
+
+<div id="admin_header">
+  <h1 class="account-title">Manage Account Address</h1>
+</div>
+
+<div id="add_address" class="customer_address edit_address" style="display:none;">
+  {% form 'customer_address', customer.new_address %}
+    <h3 id="add_address_title">Add a new address</h3>
+    <table class="customer_address_table">
+      <tr>
+        <!-- <td class="label"><label for="address_first_name_new">First Name</label></td> -->
+        <td class="value"><input type="text" id="address_first_name_new" placeholder="Fist Name" class="input-class address_form" name="address[first_name]" value="{{form.first_name}}" size="40" /></td>
+      </tr>
+      <tr>
+        <!-- <td class="label"><label for="address_last_name_new">Last Name</label></td> -->
+        <td class="value"><input type="text" id="address_last_name_new" placeholder="Last Name" class="input-class address_form" name="address[last_name]" value="{{form.last_name}}" size="40" /></td>
+      </tr>
+      <tr>
+        <!-- <td class="label"><label for="address_company_new">Company</label></td> -->
+        <td class="value"><input type="text" for="address_company_new" placeholder="Company" class="input-class address_form" name="address[company]" value="{{form.company}}" size="40" /></td>
+      </tr>
+      <tr>
+        <!-- <td class="label"><label for="address_address1_new">Address1</label></td> -->
+        <td class="value"><input type="text" id="address_address1_new" placeholder="Address1" class="input-class address_form" name="address[address1]" value="{{form.address1}}" size="40" /></td>
+      </tr>
+      <tr>
+        <!-- <td class="label"><label for="address_address2_new">Address2</label></td> -->
+        <td class="value"><input type="text" id="address_address2_new" placeholder="Address2" class="input-class address_form" name="address[address2]" value="{{form.address2}}" size="40" /></td>
+      </tr>
+      <tr>
+        <!-- <td class="label"><label for="address_city_new">City</label></td> -->
+        <td class="value"><input type="text" id="address_city_new" placeholder="City" class="input-class address_form" name="address[city]" value="{{form.city}}" size="40" /></td>
+      </tr>
+      <tr>
+        <!-- <td class="label"><label for="address_zip_new">Zip</label></td> -->
+        <td class="value"><input type="text" id="address_zip_new" placeholder="Zip" class="input-class address_form" name="address[zip]" value="{{form.zip}}" size="40" /></td>
+      </tr>
+      <tr>
+        <!-- <td class="label"><label for="address_phone_new">Phone</label></td> -->
+        <td class="value"><input type="text" id="address_phone_new" placeholder="Phone" class="input-class address_form" name="address[phone]" value="{{form.phone}}" size="40" /></td>
+      </tr>
+      <tr>
+        <!-- <td class="label"></td> -->
+        <td class="value">{{ form.set_as_default_checkbox }} Set as Default Address?</td>
+      </tr>
+    </table>
+    <div class="action_bottom">
+      <input class="btn button account-button" type="submit" value="Add Address" />
+    </div>
+  {% endform %}
+</div>
+
+<div id="address_tables">
+  {% paginate customer.addresses by 10 %}
+  {% for address in customer.addresses %}
+  <div class="address_table">
+    <div id="view_address_{{address.id}}" class="customer_address">
+      <h4 class="address_title">{{ address.street }}</h4>
+      <div class="view_address">
+        <p>{{ address.first_name }} {{ address.last_name }}</p>
+        <p>{{ address.company }}</p>
+        <p>{{ address.street }}</p>
+        <p>{{ address.city }}{% if address.province %}, {{ address.province }}{% endif %}</p>
+        <p>{{ address.country }} {{ address.zip }}</p>
+        <p>{{ address.phone }}</p>
+      </div>
+      <div class="address_actions">
+        <span class="action_link action_edit">
+          <a class="button edit-button" href="#" data-address-id="{{ address.id }}">Edit</a>
+        </span>
+          <form class="action_delete" method="post" action="/account/addresses/{{ address.id }}" onsubmit="return confirm('Are you sure you want to delete this address?');">
+            <input type="hidden" name="_method" value="delete">
+            <input type="hidden" name="form_type" value="customer_address">
+            <input type="hidden" name="utf8" value="✓">
+            <input type="submit" value="Delete">
+          </form>
+
+      </div>
+    </div>
+
+    <div id="edit_address_{{ address.id }}" class="customer_address edit_address" style="display:none;">
+      {% form 'customer_address', address %}
+        <table class="customer_address_table">
+          <!-- Поля для редактирования адреса -->
+          <tr>
+            <!-- <td class="label"><label for="address_first_name_{{ form.id }}">First Name</label></td> -->
+            <td class="value"><input type="text" id="address_first_name_{{ form.id }}" placeholder="First Name" class="input-class address_form" name="address[first_name]" value="{{ form.first_name }}" size="40" /></td>
+          </tr>
+          <tr>
+            <!-- <td class="label"><label for="address_last_name_{{ form.id }}">Last Name</label></td> -->
+            <td class="value"><input type="text" id="address_last_name_{{ form.id }}" placeholder="Last Name" class="input-class address_form" name="address[last_name]" value="{{ form.last_name }}" size="40" /></td>
+          </tr>
+          <tr>
+            <!-- <td class="label"><label for="address_company_{{ form.id }}">Company</label></td> -->
+            <td class="value"><input type="text" id="address_company_{{ form.id }}" placeholder="Company" class="input-class address_form" name="address[company]" value="{{ form.company }}" size="40" /></td>
+          </tr>
+          <tr>
+            <!-- <td class="label"><label for="address_address1_{{ form.id }}">Address1</label></td> -->
+            <td class="value"><input type="text" id="address_address1_{{ form.id }}" placeholder="Address1" class="input-class address_form" name="address[address1]" value="{{ form.address1 }}" size="40" /></td>
+          </tr>
+          <tr>
+            <!-- <td class="label"><label for="address_address2_{{ form.id }}">Address2</label></td> -->
+            <td class="value"><input type="text" id="address_address2_{{ form.id }}" placeholder="Address2" class="input-class address_form" name="address[address2]" value="{{ form.address2 }}" size="40" /></td>
+          </tr>
+          <tr>
+            <!-- <td class="label"><label for="address_city_{{ form.id }}">City</label></td> -->
+            <td class="value"><input type="text" id="address_city_{{ form.id }}" placeholder="City" class="input-class address_form" name="address[city]" value="{{ form.city }}" size="40" /></td>
+          </tr>
+          <!-- Убираем селектор для региона и добавляем поле для ввода -->
+          <tr>
+            <!-- <td class="label"><label for="address_province_{{ form.id }}">Region/Province</label></td> -->
+            <td class="value"><input type="text" id="address_province_{{ form.id }}" placeholder="Region/Province" class="input-class address_form" name="address[province]" value="{{ form.province }}" size="40" /></td>
+          </tr>
+          <tr>
+            <!-- <td class="label"><label for="address_zip_{{ form.id }}">Zip</label></td> -->
+            <td class="value"><input type="text" id="address_zip_{{ form.id }}" placeholder="Zip" class="input-class address_form" name="address[zip]" value="{{ form.zip }}" size="40" /></td>
+          </tr>
+          <tr>
+            <!-- <td class="label"><label for="address_phone_{{ form.id }}">Phone</label></td> -->
+            <td class="value"><input type="text" id="address_phone_{{ form.id }}" placeholder="Phone" class="input-class address_form" name="address[phone]" value="{{ form.phone }}" size="40" /></td>
+          </tr>
+          <tr>
+            <!-- <td class="label"></td> -->
+            <td class="value">{{ form.set_as_default_checkbox }} Set as Default Address?</td>
+          </tr>
+        </table>
+        <div class="action_bottom">
+          <input class="btn button account-button" type="submit" value="Update Address" />
+        </div>
+      {% endform %}
+    </div>
+  </div>
+  {% endfor %}
+  <div id="address_pagination">{{ paginate | default_pagination }}</div>
+{% endpaginate %}
+</div>
+
+<div class="action_top">
+  <div class="action_link action_return note" id='return_to_account'>
+    <a class="button return-button" href="/account">Return to Account page</a>
+  </div>
+  <div id="action" class="action_link action_add note">
+    <a class="add-new-button" href="#" onclick="Shopify.CustomerAddress.toggleNewForm(); return false;">Add New Address</a>
+  </div>
+</div>
+
+<script type="text/javascript" charset="utf-8">
+  document.querySelector('#action a').addEventListener('click', function(event) {
+    event.preventDefault();
+    var addressForm = document.querySelector('#add_address');
+    if (addressForm.style.display === 'none') {
+      addressForm.style.display = 'block';
+    } else {
+      addressForm.style.display = 'none';
+    }
+  });
+
+  document.querySelectorAll('.action_edit a').forEach(function(editLink) {
+    editLink.addEventListener('click', function(event) {
+      event.preventDefault();
+      var addressId = this.dataset.addressId;
+      var editForm = document.querySelector('#edit_address_' + addressId);
+      var viewAddress = document.querySelector('#view_address_' + addressId);
+
+      if (editForm.style.display === 'none') {
+        editForm.style.display = 'block';
+        viewAddress.style.display = 'none';
+      } else {
+        editForm.style.display = 'none';
+        viewAddress.style.display = 'block';
+      }
+    });
+  });
+
+var ShopifyCustomerAddress = {
+  destroy: function(id, confirm_msg) {
+    if (confirm(confirm_msg || "Are you sure you wish to delete this address?")) {
+      Shopify.postLink('/account/addresses/' + id, {'parameters': {'_method': 'delete'}});
+    }
+  }
+};
+
+
+</script>
+

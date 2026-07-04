@@ -1,0 +1,213 @@
+<style>
+  .featured-collection {
+    margin-top: {{ section.settings.margin-top }}px;
+    margin-bottom: {{ section.settings.margin-bottom }}px;
+  }
+
+  .f-collection-title {
+    padding-bottom: 15px;
+  }
+
+  .product-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px; /* Optional: adds spacing between products */
+  }
+
+  .product-list__product-block {
+    width: 30%;
+    padding: 5px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .product-list__product-block {
+    transition: transform 0.4s ease;
+  }
+
+  .product-list__product-block:hover {
+    transform: scale(1.03);
+  }
+
+  @media (max-width: 749px) {
+    .product-list__product-block {
+      width: 48%;
+    }
+  }
+
+  /* Product name — kept on one line, JS shrinks size to fit */
+  .product-list__product-name {
+    white-space: nowrap;
+    max-width: 100%;
+  }
+
+  /* Color swatches shown above product name */
+  .product-list__swatches {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 8px;
+    margin-bottom: 12px;
+  }
+  .color-swatch {
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+  }
+  .color-swatch--pink   { background: #E88BA0; }
+  .color-swatch--blue   { background: #1E4FA8; }
+  .color-swatch--black  { background: #000000; }
+  .color-swatch--white  { background: #FFFFFF; }
+  .color-swatch--green  { background: #94A15A; }
+  .color-swatch--grey   { background: #7A7A7A; }
+  .color-swatch--gray   { background: #7A7A7A; }
+  .color-swatch--navy   { background: #3B5998; }
+  .color-swatch--red    { background: #C0322B; }
+  .color-swatch--yellow { background: #EFC94C; }
+  .color-swatch--orange { background: #E77A2B; }
+  .color-swatch--purple { background: #6C4B8E; }
+  .color-swatch--brown  { background: #6E4B2E; }
+  .color-swatch--beige  { background: #D8C7A0; }
+</style>
+
+
+<div class="page-width featured-collection">
+  {% if section.settings.collection-title != blank %}
+    <h2 class="f-collection-title">{{ section.settings.collection-title }}</h2>
+  {% endif %}
+  <div class="product-list">
+    {% assign selected_collection = collections[section.settings.collection_handle] %}
+    {% assign products_to_display = selected_collection.products %}
+    
+    {% if section.settings.collection_handle == blank %}
+      {% assign products_to_display = collections['all'].products %}
+    {% endif %}
+    
+    {% for product in products_to_display limit: section.settings.products_per_page %}
+      <div class='product-list__product-block fade-in'>
+        <a class='product-list__img-link' href='{{ product.url }}'>
+          <img class='product-list__product-img' src='{{ product | img_url: 'master' }}' onload="this.closest('.product-list__product-block').classList.add('loaded')">
+        </a>
+        {%- for option in product.options_with_values -%}
+          {%- assign opt_name = option.name | downcase -%}
+          {%- if opt_name == 'color' or opt_name == 'colour' -%}
+            {%- if option.values.size > 1 -%}
+              <div class='product-list__swatches'>
+                {%- for value in option.values -%}
+                  <span class='color-swatch color-swatch--{{ value | handleize }}' title='{{ value }}' aria-label='{{ value }}'></span>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+        <a class='product-list__product-name' href='{{ product.url }}'>{{ product.title }}</a>
+        {% if product.compare_at_price > product.price and product.compare_at_price > 0 %}
+          <p class='product-list__product-price'>{{ product.price | money_with_currency }}<span><strike style="margin-left: 10px;">{{ product.compare_at_price | money_with_currency }}</strike></span></p>
+        {% else %}
+          {% assign available = false %}
+          {% for variant in product.variants %}
+            {% if variant.inventory_management == nil or variant.inventory_policy == 'continue' %}
+              {% assign available = true %}
+              {% break %}
+            {% elsif variant.inventory_quantity > 0 %}
+              {% assign available = true %}
+              {% break %}
+            {% endif %}
+          {% endfor %}
+          {% if available %}
+            <p class='product-list__product-price'>{{ product.price | money_with_currency }}</p>
+          {% else %}
+            <p class='product-list__product-price'>{{ product.price | money_with_currency }} — <strong>SOLD OUT</strong></p>
+          {% endif %}
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  (function() {
+    // Shrink product name font-size until it fits on one line inside its card
+    function fitProductNames() {
+      var names = document.querySelectorAll('.product-list__product-name');
+      // Smaller cap on mobile so it reads closer to the price
+      var isMobile = window.matchMedia('(max-width: 749px)').matches;
+      var maxSize = isMobile ? 14 : 17;
+      var minSize = 9;
+      names.forEach(function(name) {
+        name.style.fontSize = maxSize + 'px';
+        var parentWidth = name.parentElement.clientWidth;
+        var size = maxSize;
+        // scrollWidth > clientWidth means the text is overflowing
+        while (name.scrollWidth > parentWidth && size > minSize) {
+          size -= 1;
+          name.style.fontSize = size + 'px';
+        }
+      });
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', fitProductNames);
+    } else {
+      fitProductNames();
+    }
+    window.addEventListener('resize', fitProductNames);
+    window.addEventListener('load', fitProductNames);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Featured Products",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection_handle",
+      "label": "Select a collection",
+      "info": "Do not select a collection if you want to display all products"
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products to show",
+      "min": 1,
+      "max": 100,
+      "default": 10,
+      "step": 1
+    },
+    {
+      "type": "text",
+      "id": "collection-title",
+      "label": "Title",
+      "default": "COLLECTION NAME"
+    },
+    {
+      "type": "range",
+      "id": "margin-top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 70,
+      "default": 30,
+      "step": 1
+    },
+    {
+      "type": "range",
+      "id": "margin-bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 70,
+      "default": 15,
+      "step": 1
+    }
+  ],
+  "presets": [
+    {
+    "name": "Featured collection"
+    }
+  ]
+}
+{% endschema %}

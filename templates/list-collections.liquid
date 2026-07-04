@@ -1,0 +1,39 @@
+<style>
+  #collections-listing ul li{
+    list-style: none;
+    text-align: center;
+    margin: 25px 0;
+    font-size: 25px;
+  }
+
+  #collections-listing h1{
+    text-align: center;
+    margin-bottom: 3rem;
+    margin-top: 2rem;
+  }
+</style>
+<div class="page-width">
+  <div id="collections-listing">
+    {% paginate collections by 10 %}
+  
+      {% if collections.size > 0 %}
+  
+      <h1>COLLECTIONS</h1>
+  
+      <ul>
+        {% for collection in collections %}
+          <li class="{{ collection.handle }}-collection">
+          <strong><a href="{{ collection.url }}">{{ collection.title | escape }}</a></strong>
+          <!-- <small class="hint">{{ collection.products_count | pluralize: 'product', 'products' }}</small> -->
+          </li>
+        {% endfor %}
+      </ul>
+  
+      <div id="pagination">{{ paginate | default_pagination }}</div>
+  
+      {% else %}
+        <p>No Collections found...</p>
+      {% endif %}
+    {% endpaginate %}
+  </div>
+</div>

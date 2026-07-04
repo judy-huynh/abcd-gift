@@ -1,0 +1,127 @@
+<style>
+  .account-title{
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 50px;
+  }
+  .name{
+    margin-bottom: 20px;
+  }
+  .email.note, .address {
+    font-size: 13px;
+    margin-bottom: 5px;
+  }
+  
+  #view_address{
+    margin-top: 20px;
+    width: fit-content;
+    padding: 12px 18px;
+    height: auto;
+    cursor: pointer;
+    min-height: 100%;
+    border: none;
+    font-family: var(--font-heading-family) !important;
+    font-style: var(--font-heading-style) !important;
+    font-weight: var(--font-heading-weight) !important;
+    font-size: 16px;
+    display: block;
+    white-space: nowrap;
+  }
+  .second-button{
+    border: 1px solid !important;
+    margin-top: 10px !important;
+    width: 100% !important;
+    text-align: center;
+  }
+  .account-cont{
+    display: flex;
+  }
+  div#customer_sidebar {
+    margin-right: 50px;
+  }
+  #customer_orders{
+    width: 100%;
+  }
+  #customer_orders table{
+    width: 100%;
+  }
+   #customer_orders table th {
+    padding-right: 30px;
+    text-align: left;
+  }
+  table td {
+    padding-top: 10px;
+    padding-right: 30px;
+    text-align: left;
+  }
+  @media screen and (max-width: 999px){
+    .account-cont {
+    flex-direction: column;
+  }
+    div#customer_sidebar {
+    margin-right: 0px;
+    margin-bottom: 80px;
+  }
+    #customer_orders {
+    width: 100%;
+    overflow: scroll;
+  }
+  }
+  
+</style>
+<div class="page-width">
+<div id="admin_header">
+  <h1 class="account-title">Your account</h1>
+</div>
+<div class="account-cont">
+<div id="customer_sidebar">
+  <div id="customer_detail" class="group">
+    <h3 class="name">{{ customer.name }}</h3>
+    <p class="email note">{{ customer.email }}</p>
+    <div class="address note">
+      {% if customer.default_address != nil %}
+        <p>{{ customer.default_address.address1 }}</p>
+        {% if customer.default_address.address2 != "" %}
+          <p>{{ customer.default_address.address2 }}</p>
+        {% endif %}
+        <p>{{ customer.default_address.city}} {% if address.province_code %}{{customer.default_address.province_code}} {% endif %}{{customer.default_address.country}}</p>
+        <p>{{ customer.default_address.zip}}</p>
+        <p>{{ customer.default_address.phone }}</p>
+      {% endif %}
+      <a class="button" id="view_address" href="/account/addresses">View Addresses ({{ customer.addresses_count }})</a>
+      <a class="second-button" id="view_address" href="/account/logout">Log Out</a>
+    </div>
+
+  </div>
+</div>
+
+<div id="customer_orders">
+  {% if customer.orders.size != 0 %}
+  <table>
+    <thead>
+      <tr>
+        <th class="order_number">Order</th>
+        <th class="date">Date</th>
+        <th class="payment_status">Payment Status</th>
+        <th class="fulfillment_status">Fulfillment Status</th>
+        <th class="total">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in customer.orders %}
+      <tr class="{% cycle 'odd', 'even' %} {% if order.cancelled %}cancelled_order{% endif %}">
+        <td>{{ order.name | link_to: order.customer_url }}</td>
+        <td><span class="note">{{ order.created_at | date: "%b %d, %Y" }}</span></td>
+        <td><span class="status_{{ order.financial_status }}">{{ order.financial_status }}</span></td>
+        <td><span class="status_{{ order.fulfillment_status }}">{{ order.fulfillment_status }}</span></td>
+        <td><span class="total money">{{ order.total_price | money }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p>You haven't placed any orders yet.</p>
+  {% endif %}
+</div>
+</div>
+</div>

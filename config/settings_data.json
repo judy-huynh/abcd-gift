@@ -1,0 +1,107 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "current": {
+    "favicon": "shopify://shop_images/A-IG_Profile-Circle.png",
+    "type_header_font": "archivo_n6",
+    "type_body_font": "archivo_n4",
+    "font_transform": "uppercase",
+    "font_transform_body": "standart",
+    "enable_custom_headings_font": false,
+    "custom_heading_font": "",
+    "enable_custom_body_font": false,
+    "custom_body_font": "",
+    "product_list-info": "Show",
+    "collection-title": "Hide",
+    "product_list-pc": "Three",
+    "product_list": "Two",
+    "product_card_size": "Square",
+    "enable_infinity_scroll": true,
+    "body-background": "color",
+    "body-background-color": "#ffffff",
+    "headings-color": "#000000",
+    "body-color": "#000000",
+    "header-menu": "#000000",
+    "submenu-color": "#000000",
+    "submenu-bg": "#ffffff",
+    "header-menu-mobile": "#ffffff",
+    "header-menu-mobile-background": "#000000",
+    "button-color": "#ffffff",
+    "button-bg": "#000000",
+    "input-color": "#000000",
+    "input-bg": "#ffffff",
+    "image-switches": "black",
+    "product_dot_bg": "#ffffff",
+    "product_dot_active": "#000000",
+    "product_desc_size_pc": 12,
+    "product_desc_line_height_pc": 1.4,
+    "product_desc_size_mobile": 13,
+    "product_desc_line_height_mobile": 1.6,
+    "eyecey-copy": false,
+    "enable-preloader": false,
+    "pageloader-logo": "shopify://shop_images/EYECEY_logo2_1.png",
+    "pageloader-logo-size": 230,
+    "pageloader-logo-size-mobile": 120,
+    "enable-header-overlay": false,
+    "header-overlay-logo": "shopify://shop_images/Mask_group.png",
+    "checkout_accent_color": "#000000",
+    "checkout_button_color": "#000000",
+    "sections": {
+      "featured-collection": {
+        "type": "featured-collection",
+        "settings": {
+          "collection_handle": "",
+          "products_per_page": 10
+        }
+      },
+      "header": {
+        "type": "header",
+        "custom_css": [
+          ".logo-wrapper img {width: 1600px; /* Set your desired width */ max-height: auto; /* Keep the height proportional */}"
+        ],
+        "settings": {
+          "logo": "shopify://shop_images/ABCD-Logo.svg",
+          "logo-size": 400,
+          "logo-size-mobile": 300,
+          "menu": ""
+        }
+      },
+      "footer": {
+        "type": "footer",
+        "disabled": true,
+        "settings": {
+          "footer_display": "menu",
+          "footer_menu": "",
+          "nav_size_pc": 15,
+          "nav_size_mobile": 16
+        }
+      },
+      "related-products": {
+        "type": "related-products",
+        "settings": {
+          "related_show": true
+        }
+      }
+    },
+    "content_for_index": [],
+    "blocks": {
+      "6406956604159796213": {
+        "type": "shopify://apps/smart-seo/blocks/smartseo/7b0a6064-ca2e-4392-9a1d-8c43c942357b",
+        "disabled": false,
+        "settings": {}
+      },
+      "4976129024724438625": {
+        "type": "shopify://apps/smart-seo/blocks/brokenLinkDetection/7b0a6064-ca2e-4392-9a1d-8c43c942357b",
+        "disabled": false,
+        "settings": {}
+      }
+    }
+  }
+}

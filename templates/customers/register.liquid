@@ -1,0 +1,96 @@
+<style>
+  .account-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .account-title{
+    margin-bottom: 40px;
+  }
+  .account-input{
+    display: block;
+    max-width: 100%;
+    width: 100%;
+    padding: 11px 18px;
+    font-size: 14px;
+    border: 1px solid;
+    border-radius: 0;
+    margin-bottom: 20px;
+  }
+  #forgot_password {
+    text-align: right;
+    font-size: 15px;
+    margin-bottom: 15px;
+  }
+  .account-button{
+    width: 100%;
+    padding: 12px 18px;
+    height: auto;
+    cursor: pointer;
+    min-height: 100%;
+    border: none;
+    border-radius: 0;
+    font-family: var(--font-heading-family) !important;
+    font-style: var(--font-heading-style) !important;
+    font-weight: var(--font-heading-weight) !important;
+    font-size: 16px;
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+  }
+  .account-button-second{
+    border: 1px solid {{ settings.headings-color }};
+  }
+  #customer_login{
+    width: 100%;
+  }
+  #create_customer{
+    width: 100%;
+  }
+</style>
+
+<div id="template" class="page-width">
+  <div id="customer" class="account-container">
+	  <!-- Create Customer -->
+	  
+	    <div class="template_header">
+	      <h1 class="title account-title">Create Account</h1>
+	    </div>
+
+	    {% form 'create_customer' %}
+	      {{ form.errors | default_errors }}
+
+	      <div class="clearfix large_form">
+	        <!-- <label for="first_name" class="login">First Name</label> -->
+	        <input type="text" placeholder="First Name" value="" name="customer[first_name]" id="first_name" class="input-class account-input large" size="30" />
+	      </div>
+
+	      <div class="clearfix large_form">
+	        <!-- <label for="last_name" class="login">Last Name</label> -->
+	        <input type="text" placeholder="Last Name" value="" name="customer[last_name]" id="last_name" class="input-class account-input large" size="30" />
+	      </div>
+
+	      <div class="clearfix large_form">
+	        <!-- <label for="email" class="login">Email Address</label> -->
+	        <input type="email" placeholder="Your Email" value="" name="customer[email]" id="email" class="input-class account-input large" size="30" />
+	      </div>
+
+	      <div class="clearfix large_form">
+	        <!-- <label for="password" class="login">Password</label> -->
+	        <input type="password" placeholder="Password" value="" name="customer[password]" id="password" class="input-class account-input large password" size="30" />
+	      </div>
+
+	      <div class="action_bottom">
+	        <input class="button account-button" type="submit" value="Create Account" />
+	      </div>
+          <div class="action_bottom">
+            <a href="/account/login" class="account-button account-button-second">Already have one?</a>
+          </div>
+	    {% endform %}
+	  
+  </div>
+</div>

@@ -1,0 +1,235 @@
+<style>
+.checkout-elements {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    bottom: 0;
+    left: 0;
+    padding: 1.5rem 0rem 3rem 0rem;
+}
+.cart__total {
+    text-align: center;
+    margin-bottom: 1.3rem;
+    font-size: 18px;
+    text-transform: uppercase;
+}
+@media screen and (max-width: 749px){
+  .checkout-elements {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    bottom: 0;
+    background: #a9a7a74d;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    left: 0;
+    padding: 1.5rem 0rem 3rem 0rem;
+}
+.cart__total {
+    text-align: center;
+    margin-bottom: 1.3rem;
+    font-size: 18px;
+}
+  .cart__item-quantity{
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        margin-bottom: 30px;
+        align-items: center;
+  }
+  .cart__quantity-btn {
+    padding: 0 !important;
+}
+}
+.quantity-wrapper {
+    display: flex;
+    align-items: center;
+}
+.cart__quantity-btn {
+    padding: 8px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+}
+button.cart__quantity-btn svg {
+    width: 15px;
+}
+.cart__quantity-btn-minus.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+.cart__quantity-btn-plus.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.cart__quantity-value {
+    margin: 0 1rem;
+    min-width: 1rem;
+    text-align: center;
+}
+</style>
+
+<div class="page-width">
+  <div class='cart'>
+    {% if cart.item_count != 0 %}
+    <form class="cart__form" action="{{ routes.cart_url }}" method="post">
+      {% for item in cart.items %}
+        <div class='cart__item'>
+          <img class='cart__item-img' src='{{ item | img_url: 'master' }}'>
+          <div class='cart__item-heading'>
+            <h2 class='cart__item-title'>{{ item.title }}</h2>
+            <a class='cart__item-remove-link' href="{{ item.url_to_remove }}">Remove</a>
+          </div>
+          <p class='cart__item-final-price'>
+            <span class='cart__item-title-span'>Price</span>
+            <span class='cart__item-main-span'>{{ item.final_price | money }}</span>
+          </p>
+          <!-- Кнопки для изменения количества товаров -->
+          <div class='cart__item-quantity'>
+            <span class='cart__item-title-span'>Quantity</span>
+            <div class="quantity-wrapper" 
+                 data-key="{{ item.key }}" 
+                 data-quantity="{{ item.quantity }}" 
+                 data-inventory="{{ item.variant.inventory_quantity }}" 
+                 data-track-quantity="{% if item.variant.inventory_management %}true{% else %}false{% endif %}" 
+                 data-allow-oversell="{{ item.variant.inventory_policy == 'continue' }}">
+              <button class="cart__quantity-btn cart__quantity-btn-minus" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M21 12C21 12.1989 20.921 12.3897 20.7803 12.5303C20.6397 12.671 20.4489 12.75 20.25 12.75H3.75C3.55109 12.75 3.36032 12.671 3.21967 12.5303C3.07902 12.3897 3 12.1989 3 12C3 11.8011 3.07902 11.6103 3.21967 11.4697C3.36032 11.329 3.55109 11.25 3.75 11.25H20.25C20.4489 11.25 20.6397 11.329 20.7803 11.4697C20.921 11.6103 21 11.8011 21 12Z" fill="{{ settings.headings-color }}"/>
+                </svg>
+              </button>
+              <span class="cart__quantity-value" id="quantity-{{ item.key }}">{{ item.quantity }}</span>
+              <button class="cart__quantity-btn cart__quantity-btn-plus {% if item.quantity == item.variant.inventory_quantity and item.variant.inventory_policy != 'continue' %}disabled{% endif %}" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25" fill="none">
+                  <path d="M21.4355 12.6982C21.4355 12.8972 21.3565 13.0879 21.2159 13.2286C21.0752 13.3692 20.8845 13.4482 20.6855 13.4482H13.1855V20.9482C13.1855 21.1472 13.1065 21.3379 12.9659 21.4786C12.8252 21.6192 12.6345 21.6982 12.4355 21.6982C12.2366 21.6982 12.0459 21.6192 11.9052 21.4786C11.7646 21.3379 11.6855 21.1472 11.6855 20.9482V13.4482H4.18555C3.98663 13.4482 3.79587 13.3692 3.65522 13.2286C3.51456 13.0879 3.43555 12.8972 3.43555 12.6982C3.43555 12.4993 3.51456 12.3086 3.65522 12.1679C3.79587 12.0273 3.98663 11.9482 4.18555 11.9482H11.6855V4.44824C11.6855 4.24933 11.7646 4.05856 11.9052 3.91791C12.0459 3.77726 12.2366 3.69824 12.4355 3.69824C12.6345 3.69824 12.8252 3.77726 12.9659 3.91791C13.1065 4.05856 13.1855 4.24933 13.1855 4.44824V11.9482H20.6855C20.8845 11.9482 21.0752 12.0273 21.2159 12.1679C21.3565 12.3086 21.4355 12.4993 21.4355 12.6982Z" fill="{{ settings.headings-color }}"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+      <div class="checkout-elements">
+        <p class="cart__total">Total: {{ cart.total_price | money }}</p>
+        <input class='cart__submit-btn button' type="submit" name="checkout" value="Checkout">
+      </div>
+    </form>
+    {% else %}
+      <div>
+        <p class="cart__else-title">Your cart is empty.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  function updateButtonStates(wrapper, inventoryQuantity, trackQuantity, allowOversell) {
+    const minusButton = wrapper.querySelector('.cart__quantity-btn-minus');
+    const plusButton = wrapper.querySelector('.cart__quantity-btn-plus');
+    let quantity = parseInt(wrapper.getAttribute('data-quantity'));
+
+    if (quantity <= 1) {
+      minusButton.classList.add('disabled');
+      minusButton.disabled = true;
+    } else {
+      minusButton.classList.remove('disabled');
+      minusButton.disabled = false;
+    }
+
+    if (trackQuantity === 'false' || allowOversell === 'true') {
+      plusButton.classList.remove('disabled');
+      plusButton.disabled = false;
+    } else {
+      if (quantity >= inventoryQuantity) {
+        plusButton.classList.add('disabled');
+        plusButton.disabled = true;
+      } else {
+        plusButton.classList.remove('disabled');
+        plusButton.disabled = false;
+      }
+    }
+  }
+
+  document.querySelectorAll('.quantity-wrapper').forEach(wrapper => {
+    const inventoryQuantity = parseInt(wrapper.getAttribute('data-inventory'));
+    const trackQuantity = wrapper.getAttribute('data-track-quantity'); 
+    const allowOversell = wrapper.getAttribute('data-allow-oversell'); 
+
+    updateButtonStates(wrapper, inventoryQuantity, trackQuantity, allowOversell); 
+
+    wrapper.querySelector('.cart__quantity-btn-minus').addEventListener('click', function() {
+      let quantity = parseInt(wrapper.getAttribute('data-quantity'));
+      if (quantity > 1) {
+        quantity--;
+        updateCartQuantity(wrapper, quantity, inventoryQuantity, trackQuantity, allowOversell);
+      }
+    });
+
+    wrapper.querySelector('.cart__quantity-btn-plus').addEventListener('click', function() {
+      let quantity = parseInt(wrapper.getAttribute('data-quantity'));
+      if (trackQuantity === 'false' || allowOversell === 'true' || quantity < inventoryQuantity) {
+        quantity++;
+        updateCartQuantity(wrapper, quantity, inventoryQuantity, trackQuantity, allowOversell);
+      }
+    });
+  });
+
+  function updateCartQuantity(wrapper, quantity, inventoryQuantity, trackQuantity, allowOversell) {
+    const key = wrapper.getAttribute('data-key');
+
+    fetch('/cart/change.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        id: key,
+        quantity: quantity
+      })
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error updating cart');
+      }
+      return response.json();
+    })
+    .then(cart => {
+      wrapper.setAttribute('data-quantity', quantity);
+      document.getElementById('quantity-' + key).textContent = quantity;
+
+      updateButtonStates(wrapper, inventoryQuantity, trackQuantity, allowOversell);
+
+      updateCartTotal(cart);
+      updateCartCount(cart.item_count);
+    })
+    .catch(error => {
+      console.error('Error:', error); 
+    });
+  }
+
+  function updateCartTotal(cart) {
+    const totalElement = document.querySelector('.cart__total');
+    if (totalElement) {
+      var _t = cart.total_price / 100;
+      totalElement.textContent = `Total: $${_t % 1 === 0 ? _t : _t.toFixed(2)}`;
+    }
+  }
+
+  function updateCartCount(cartItemCount) {
+    const cartCountElement = document.getElementById('CartCount');
+    if (cartCountElement) {
+      cartCountElement.textContent = cartItemCount;
+    }
+  }
+
+});
+
+</script>
+

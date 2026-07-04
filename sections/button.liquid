@@ -1,0 +1,39 @@
+<style>
+  .custom-button{
+    padding: 13px;
+    font-size: 16px;
+  }
+  .button-wrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0.5rem 1.8rem 1.8rem;
+  }
+  
+</style>
+<div class="button-wrapper">
+  <a class="button custom-button" href="{{ section.settings.button-link }}">{{ section.settings.text }}</a>
+</div>
+{% schema %}
+  {
+    "name": "Button",
+    "settings": [
+      {
+        "type": "url",
+        "id": "button-link",
+        "label": "Button link"
+      },
+      {
+        "type": "text",
+        "id": "text",
+        "label": "Button text",
+        "default": "SHOP ALL"
+      }
+    ],
+    "presets": [
+      {
+      "name": "Button"
+      }
+    ]
+  }
+{% endschema %}

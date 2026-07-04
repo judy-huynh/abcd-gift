@@ -1,0 +1,684 @@
+<style>
+  /* ── Article Hero ── */
+  .article-hero {
+    width: 100%;
+    aspect-ratio: 16 / 7;
+    max-height: 620px;
+    overflow: hidden;
+    background: #f2f2f2;
+    position: relative;
+    cursor: pointer;
+    margin-top: 30px;
+  }
+
+  .article-hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+  }
+
+  .article-hero:hover img {
+    transform: scale(1.015);
+  }
+
+  /* ── Hero: View Full Image Button ── */
+  .article-hero__expand {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 2px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 2;
+  }
+
+  .article-hero__expand:hover {
+    background: rgba(0,0,0,0.85);
+  }
+
+  .article-hero__expand svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* ── Lightbox ── */
+  .article-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0,0,0,0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    cursor: zoom-out;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .article-lightbox--active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .article-lightbox img {
+    max-width: 92vw;
+    max-height: 92vh;
+    object-fit: contain;
+    border-radius: 2px;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.5);
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+  }
+
+  .article-lightbox--active img {
+    transform: scale(1);
+  }
+
+  .article-lightbox__close {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.5rem;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    padding: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .article-lightbox__close:hover {
+    opacity: 1;
+  }
+
+  .article-lightbox__close svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* ── Article Shell ── */
+  .article-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    box-sizing: border-box;
+  }
+
+  .article-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    margin-bottom: 2.5rem;
+  }
+
+  .article-back {
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: inherit;
+    opacity: 0.4;
+    transition: opacity 0.2s;
+    font-weight: 600;
+  }
+
+  .article-back:hover {
+    opacity: 1;
+  }
+
+  .article-reading-time {
+    font-size: 12px;
+    opacity: 0.35;
+    letter-spacing: 0.3px;
+  }
+
+  /* ── Main + Sidebar Layout ── */
+  .article-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  /* ── Article Content ── */
+  .article-header {
+    margin-bottom: 2rem;
+  }
+
+  .article-tags-top {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 1rem;
+  }
+
+  .article-tag-pill {
+    font-size: 9px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: inherit;
+    opacity: 0.35;
+    font-weight: 600;
+    padding: 3px 8px;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+
+  .article-tag-pill:hover {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+    opacity: 1;
+  }
+
+  .article-title {
+    font-size: 38px;
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin: 0 0 1rem;
+  }
+
+  .article-meta {
+    font-size: 13px;
+    opacity: 0.4;
+    letter-spacing: 0.3px;
+  }
+
+  .article-content {
+    line-height: 1.75;
+    font-size: 16.5px;
+    letter-spacing: 0.01em;
+  }
+
+  .article-content p {
+    margin-bottom: 1.5em;
+  }
+
+  .article-content h2 {
+    font-size: 26px;
+    margin: 2.5rem 0 1rem;
+    letter-spacing: -0.3px;
+  }
+
+  .article-content h3 {
+    font-size: 20px;
+    margin: 2rem 0 0.75rem;
+  }
+
+  .article-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 2px;
+    margin: 1.5rem 0;
+  }
+
+  .article-content blockquote {
+    margin: 2rem 0;
+    padding: 1.25rem 1.5rem;
+    border-left: 3px solid #000;
+    background: #f8f8f6;
+    font-style: italic;
+  }
+
+  .article-content a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* ── Sidebar ── */
+  .article-sidebar {
+    position: sticky;
+    top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .sidebar-block {
+    padding: 1.5rem;
+    background: #f8f8f6;
+    border-radius: 2px;
+  }
+
+  .sidebar-block__label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    opacity: 0.35;
+    margin: 0 0 1rem;
+  }
+
+  /* ── Sidebar: Author / About ── */
+  .sidebar-author__name {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 0.4rem;
+  }
+
+  .sidebar-author__bio {
+    font-size: 13px;
+    line-height: 1.55;
+    opacity: 0.6;
+    margin: 0;
+  }
+
+  /* ── Sidebar: Newsletter ── */
+  .sidebar-newsletter__text {
+    font-size: 13px;
+    line-height: 1.55;
+    opacity: 0.6;
+    margin: 0 0 1rem;
+  }
+
+  .sidebar-newsletter__input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 2px;
+    font-size: 13px;
+    margin-bottom: 8px;
+    box-sizing: border-box;
+    background: #fff;
+  }
+
+  .sidebar-newsletter__btn {
+    width: 100%;
+    padding: 10px;
+    background: #000;
+    color: #fff;
+    border: none;
+    border-radius: 2px;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .sidebar-newsletter__btn:hover {
+    opacity: 0.8;
+  }
+
+  /* ── Sidebar: Newsletter Success ── */
+  .sidebar-newsletter__success {
+    display: none;
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: #f0faf0;
+    border: 1px solid #c6e6c6;
+    border-radius: 2px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #1a6b1a;
+    text-align: center;
+  }
+
+  .sidebar-newsletter__success--visible {
+    display: block;
+  }
+
+  /* ── Sidebar: Ad / Promo Placeholder ── */
+  .sidebar-ad {
+    aspect-ratio: 1 / 1;
+    background: #eee;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    opacity: 0.25;
+  }
+
+  /* ── Sidebar: Social / Instagram Placeholder ── */
+  .sidebar-social__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+  }
+
+  .sidebar-social__item {
+    aspect-ratio: 1;
+    background: #eee;
+    border-radius: 2px;
+  }
+
+  .sidebar-social__link {
+    display: inline-block;
+    margin-top: 0.75rem;
+    font-size: 12px;
+    text-decoration: none;
+    color: inherit;
+    opacity: 0.5;
+    letter-spacing: 0.5px;
+  }
+
+  .sidebar-social__link:hover {
+    opacity: 1;
+  }
+
+  /* ── Share Row ── */
+  .article-share {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .article-share__label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    opacity: 0.3;
+  }
+
+  .article-share__links {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .article-share__link {
+    font-size: 12px;
+    text-decoration: none;
+    color: inherit;
+    opacity: 0.45;
+    transition: opacity 0.2s;
+    letter-spacing: 0.3px;
+  }
+
+  .article-share__link:hover {
+    opacity: 1;
+  }
+
+  /* ── Prev / Next Nav ── */
+  .article-nav {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 4rem;
+  }
+
+  .article-nav__item {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .article-nav__item--next {
+    text-align: right;
+  }
+
+  .article-nav__direction {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.3;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .article-nav__title {
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.2px;
+  }
+
+  .article-nav__item:hover .article-nav__title {
+    text-decoration: underline;
+  }
+
+  /* ── Responsive ── */
+  @media screen and (max-width: 999px) {
+    .article-layout {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+
+    .article-sidebar {
+      position: static;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    .article-sidebar > * {
+      flex: 1;
+      min-width: 240px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .article-page {
+      padding: 0 16px;
+    }
+
+    .article-hero {
+      aspect-ratio: 16 / 9;
+      max-height: 400px;
+    }
+
+    .article-title {
+      font-size: 28px;
+    }
+
+    .article-content {
+      font-size: 15.5px;
+    }
+
+    .article-nav {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .article-nav__item--next {
+      text-align: left;
+    }
+
+    .article-sidebar {
+      flex-direction: column;
+    }
+
+    .article-sidebar > * {
+      min-width: unset;
+    }
+  }
+</style>
+
+{%- comment -%} ── Full-width hero image with lightbox trigger ── {%- endcomment -%}
+{% if article.image %}
+  <div class="article-hero" onclick="document.getElementById('articleLightbox').classList.add('article-lightbox--active')" role="button" tabindex="0" aria-label="View full image">
+    <img
+      src="{{ article.image | image_url: width: 1800 }}"
+      alt="{{ article.image.alt | default: article.title | escape }}"
+      width="1800"
+      height="{{ 1800 | divided_by: article.image.aspect_ratio | round }}"
+      loading="eager">
+    <button class="article-hero__expand" type="button" aria-label="Expand image">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+      View full image
+    </button>
+  </div>
+
+  {%- comment -%} ── Lightbox overlay ── {%- endcomment -%}
+  <div class="article-lightbox" id="articleLightbox" onclick="this.classList.remove('article-lightbox--active')">
+    <button class="article-lightbox__close" type="button" aria-label="Close lightbox">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      Close
+    </button>
+    <img
+      src="{{ article.image | image_url: width: 2400 }}"
+      alt="{{ article.image.alt | default: article.title | escape }}"
+      onclick="event.stopPropagation()"
+      loading="lazy">
+  </div>
+{% endif %}
+
+<div class="article-page">
+
+  {%- comment -%} ── Top bar ── {%- endcomment -%}
+  <div class="article-top-bar">
+    <a class="article-back" href="{{ blog.url }}">← {{ blog.title }}</a>
+    {% assign word_count = article.content | strip_html | split: ' ' | size %}
+    {% assign read_time = word_count | divided_by: 230 | at_least: 1 %}
+    <span class="article-reading-time">{{ read_time }} min read</span>
+  </div>
+
+  {%- comment -%} ── Content + Sidebar ── {%- endcomment -%}
+  <div class="article-layout">
+
+    {%- comment -%} ── Main Column ── {%- endcomment -%}
+    <article>
+      <header class="article-header">
+        <h1 class="article-title">{{ article.title }}</h1>
+
+        <div class="article-meta">
+          {{ article.published_at | date: "%B %-d, %Y" }}{% if article.author != blank %} · {{ article.author }}{% endif %}
+        </div>
+      </header>
+
+      <div class="article-content rte">
+        {{ article.content }}
+      </div>
+
+      {%- comment -%} ── Tags (bottom) ── {%- endcomment -%}
+      {% if article.tags.size > 0 %}
+        <div class="article-tags-top" style="margin-top: 2rem;">
+          {% for tag in article.tags %}
+            <a class="article-tag-pill" href="{{ blog.url }}/tagged/{{ tag | handleize }}">{{ tag }}</a>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {%- comment -%} ── Share ── {%- endcomment -%}
+      <div class="article-share">
+        <span class="article-share__label">Share</span>
+        <div class="article-share__links">
+          <a class="article-share__link" href="https://twitter.com/intent/tweet?text={{ article.title | url_encode }}&url={{ shop.url }}{{ article.url }}" target="_blank" rel="noopener">Twitter</a>
+          <a class="article-share__link" href="https://www.facebook.com/sharer/sharer.php?u={{ shop.url }}{{ article.url }}" target="_blank" rel="noopener">Facebook</a>
+          <a class="article-share__link" href="mailto:?subject={{ article.title | url_encode }}&body={{ shop.url }}{{ article.url }}" target="_blank">Email</a>
+        </div>
+      </div>
+    </article>
+
+    {%- comment -%} ── Sidebar ── {%- endcomment -%}
+    <aside class="article-sidebar">
+
+      {%- comment -%} Author block {%- endcomment -%}
+      <div class="sidebar-block">
+        <p class="sidebar-block__label">About the author</p>
+        <p class="sidebar-author__name">{{ article.author }}</p>
+        <p class="sidebar-author__bio">Writer and contributor covering product, lifestyle, and everything in between.</p>
+      </div>
+
+      {%- comment -%} Newsletter {%- endcomment -%}
+      <div class="sidebar-block">
+        <p class="sidebar-block__label">Stay in the loop</p>
+        <p class="sidebar-newsletter__text">New posts and product drops — straight to your inbox.</p>
+        {% form 'customer' %}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          <input class="sidebar-newsletter__input" type="email" name="contact[email]" placeholder="Your email" required>
+          <button class="sidebar-newsletter__btn" type="submit">Subscribe</button>
+        {% endform %}
+        <div class="sidebar-newsletter__success" id="sidebarNewsletterSuccess">
+          You're on the list! Check your inbox (and junk folder) for a confirmation.
+        </div>
+      </div>
+
+      {%- comment -%} Instagram feed via Elfsight {%- endcomment -%}
+      <div class="sidebar-block">
+        <p class="sidebar-block__label">Instagram</p>
+        <script src="https://elfsightcdn.com/platform.js" async></script>
+        <div class="elfsight-app-3a6fba09-378f-422d-849c-76609eb58f97" data-elfsight-app-lazy></div>
+        <a class="sidebar-social__link" href="https://www.instagram.com/abcd.gift" target="_blank" rel="noopener">@abcd.gift →</a>
+      </div>
+
+      {%- comment -%} Ad / promo placeholder {%- endcomment -%}
+      <div class="sidebar-ad">
+        Ad / Promo
+      </div>
+
+    </aside>
+  </div>
+
+  {%- comment -%} ── Prev / Next Navigation ── {%- endcomment -%}
+  <nav class="article-nav" aria-label="Article navigation">
+    <div>
+      {% if blog.previous_article %}
+        <a class="article-nav__item" href="{{ blog.previous_article.url }}">
+          <span class="article-nav__direction">← Previous</span>
+          <span class="article-nav__title">{{ blog.previous_article.title }}</span>
+        </a>
+      {% endif %}
+    </div>
+    <div>
+      {% if blog.next_article %}
+        <a class="article-nav__item article-nav__item--next" href="{{ blog.next_article.url }}">
+          <span class="article-nav__direction">Next →</span>
+          <span class="article-nav__title">{{ blog.next_article.title }}</span>
+        </a>
+      {% endif %}
+    </div>
+  </nav>
+
+</div>
+
+<script>
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      var lb = document.getElementById('articleLightbox');
+      if (lb) lb.classList.remove('article-lightbox--active');
+    }
+  });
+
+  /* ── Show newsletter success message after subscribe ── */
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('customer_posted') === 'true') {
+      var msg = document.getElementById('sidebarNewsletterSuccess');
+      if (msg) {
+        msg.classList.add('sidebar-newsletter__success--visible');
+        msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  })();
+</script>

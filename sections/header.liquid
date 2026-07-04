@@ -1,0 +1,367 @@
+<style>
+ #shopify-section-header,
+ .sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: #fff;
+    width: 100%;
+  }
+ .sticky-header {
+    padding-bottom: 10px;
+    transition: padding-bottom 0.25s ease;
+  }
+ .sticky-header.scrolled {
+    padding-bottom: 6px;
+  }
+ .header-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .header-wrapper > * {
+    flex: 1;
+    text-align: center;
+  }
+  .logo-wrapper {
+    flex: 0 1 auto;
+    padding: 20px 10px;
+    margin: 0 auto;
+    transition: padding 0.25s ease;
+  }
+  .sticky-header.scrolled .logo-wrapper {
+    padding: 20px 10px 0;
+  }
+  .header-menu,
+  .header-cart {
+    flex-grow: 1;
+  }
+  .right-nav {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 16px;
+  transition: margin-top 0.25s ease, font-size 0.25s ease;
+}
+  .sticky-header.scrolled .right-nav {
+    margin-top: 0;
+    font-size: 14px;
+  }
+
+.right-nav a {
+  margin: 0 10px;
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 5px 11px;
+  border: none;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.right-nav a:hover {
+  background: #000;
+  color: #fff;
+}
+  .account{
+    margin-right: 15px;
+  }
+
+  /* Keep the nav on one line and vertically-align every item (including the IG icon) */
+  .right-nav {
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+  }
+  .ig-link {
+    display: inline-flex !important;
+    align-items: center;
+    color: #000;
+    line-height: 0;
+  }
+  .ig-link svg {
+    display: block;
+  }
+  @media screen and (max-width: 900px) {
+    .right-nav {
+      font-size: 13px;
+    }
+    .right-nav a {
+      margin: 0 4px;
+      padding: 4px 6px;
+      letter-spacing: 0.3px;
+    }
+  }
+  @media screen and (max-width: 500px) {
+    .right-nav {
+      font-size: 11px;
+    }
+    .right-nav a {
+      margin: 0 2px;
+      padding: 3px 4px;
+    }
+  }
+  .header-menu {
+    text-align: left;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .header-menu .menu-item, .right-nav, .right-nav > *{
+    text-transform: uppercase;
+    font-size: 16px;
+  }
+  .header-menu .menu-item:not(:last-child) {
+    margin-right: 15px;
+  }
+  .logo-wrapper img {
+    width: {{ section.settings.logo-size }}px;
+    max-width: 100%;
+  }
+  .submenu {
+    display: none;
+    position: absolute;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+    background: {{ settings.submenu-bg }};
+    z-index: 100;
+    left: 0;
+    margin-top: 10px;
+    flex-direction: column;
+    padding: 0;
+    min-width: 150px;
+  }
+  .subsub-menu-item {
+    padding-top: 0 !important;
+    font-size: 13px;
+  }
+  .submenu a {
+    padding: 10px;
+    display: block;
+    text-decoration: none;
+    text-align: center;
+  }
+
+  .has-children {
+    position: relative;
+  }
+  .has-children > a:after {
+    content: ' +';
+  }
+  .has-children.active > a:after {
+    content: ' -';
+  }
+.burger-menu {
+  cursor: pointer;
+  display: none; 
+  position: relative;
+  z-index: 997;
+}
+
+@media screen and (max-width: 749px) {
+  .burger-menu {
+    display: block;
+    margin-right: 20px; 
+  }
+  
+  .header-menu .menu-item:not(:last-child) {
+    margin-right: 0;
+    margin-bottom: 1.7rem;
+  }
+
+  .header-menu .menu-item {
+    text-transform: uppercase;
+    font-size: 25px;
+    text-align: center;
+  }
+  {% if section.settings.menu != blank %}
+  .header-wrapper > * {
+    flex: 0 1 auto;
+  }
+  {% endif %}
+
+  .header-menu {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+
+  .header-menu.active {
+    display: flex; 
+  }
+  .submenu {
+    z-index: 100;
+    position: inherit;
+    background: none;
+    box-shadow: none;
+  }
+  .submenu a{
+    font-size: 18px;
+    text-align: center;
+  }
+  .subsub-menu-item {
+    padding-top: 0 !important;
+    font-size: 13px !important;
+  }
+  .account{
+    display: none;
+  }
+}
+  @media screen and (min-width: 750px){
+    .submenu a {
+    color: {{ settings.submenu-color }};
+  }
+    .account-mobile{
+      display: none;
+    }
+  }
+  @media screen and (max-width: 500px) {
+    .logo-wrapper img {
+      width: {{ section.settings.logo-size-mobile }}px;
+    }
+  }
+</style>
+<div class="sticky-header">
+<div class="page-width">
+<div class="header-wrapper">
+ <div class="logo-wrapper">
+  <a href="{{ routes.root_url }}" class="header__heading-link">
+    {%- if section.settings.logo != blank -%}
+      <img class="header-logo" src="{{ section.settings.logo | img_url: 'master' }}" alt="{{ shop.name }}" loading="eager">
+    {%- else -%}
+      <span class="header-logo-text">{{ shop.name }}</span>
+    {%- endif -%}
+  </a>
+</div>
+</div>
+  <!-- Add right-nav here -->
+<div class="right-nav">
+  <a href="https://abcd.gift">Store</a>
+<a href="/pages/faq">FAQ</a>
+  {% if shop.customer_accounts_enabled %}
+
+    <a class="account" href="/account">Account</a>
+    <a href="/cart">Cart (<span id="CartCount">{{ cart.item_count }}</span>)</a>
+  {% endif %}
+  <a href="https://instagram.com/abcd.gift" target="_blank" rel="noopener" class="ig-link" aria-label="Instagram">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+      <path d="M12 2.163c3.204 0 3.584.012 4.849.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.849.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+    </svg>
+  </a>
+
+
+</div>
+</div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var stickyHeader = document.querySelector('.sticky-header');
+  if (stickyHeader) {
+    var onScroll = function() {
+      if (window.scrollY > 40) {
+        stickyHeader.classList.add('scrolled');
+      } else {
+        stickyHeader.classList.remove('scrolled');
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  var burgerMenu = document.querySelector('.burger-menu');
+  var headerMenu = document.querySelector('.header-menu');
+  var burgerIcon = document.querySelector('.burger');
+  var crossIcon = document.querySelector('.cross');
+  var body = document.querySelector('body');
+
+  burgerMenu.addEventListener('click', function() {
+    var isOpen = headerMenu.classList.contains('active');
+    
+    headerMenu.classList.toggle('active');
+    if (isOpen) {
+      burgerIcon.style.display = 'block';
+      crossIcon.style.display = 'none';
+      body.style.overflow = 'inherit';
+    } else {
+      burgerIcon.style.display = 'none';
+      crossIcon.style.display = 'block';
+      body.style.overflow = 'hidden';
+    }
+  });
+
+  var menuItems = document.querySelectorAll('.header-menu > .menu-item');
+  menuItems.forEach(function(item) {
+    var link = item.querySelector('.menu-link');
+    link.addEventListener('click', function(event) {
+      if(item.classList.contains('has-children')){
+        event.preventDefault();
+        var active = document.querySelector('.menu-item.active');
+        if(active && active !== item){
+          active.classList.remove('active');
+          active.querySelector('.submenu').style.display = 'none';
+        }
+        var submenu = item.querySelector('.submenu');
+        submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+        item.classList.toggle('active');
+      }
+    });
+  });
+
+  document.addEventListener('click', function(event) {
+    if (!event.target.closest('.menu-item')) {
+      var submenus = document.querySelectorAll('.submenu');
+      submenus.forEach(function(submenu) {
+        submenu.style.display = 'none';
+      });
+      var activeItems = document.querySelectorAll('.menu-item.active');
+      activeItems.forEach(function(item) {
+        item.classList.remove('active');
+      });
+    }
+  });
+});
+</script>
+
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "range",
+      "id": "logo-size",
+      "min": 50,
+      "max": 400,
+      "step": 5,
+      "default": 150,
+      "unit": "px",
+      "label": "Logo size"
+    },
+    {
+      "type": "range",
+      "id": "logo-size-mobile",
+      "min": 50,
+      "max": 300,
+      "step": 5,
+      "default": 100,
+      "unit": "px",
+      "label": "Mobile logo size"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Header menu"
+    }
+  ]
+}
+{% endschema %}

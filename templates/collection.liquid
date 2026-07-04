@@ -1,0 +1,170 @@
+<style>
+  .product-list__product-block {
+    transition: transform 0.4s ease;
+  }
+
+  .product-list__product-block:hover {
+    transform: scale(1.03);
+  }
+</style>
+
+<div class="page-width">
+  <h2 class="collection-title">{{ collection.title }}</h2>
+  <div class='product-list-wraper'>
+    
+    {%- paginate collection.products by 10 -%}
+      <div id="product-list" class='product-list'>
+        {%- for product in collection.products -%}
+          <div class='product-list__product-block fade-in'>
+            <div class="loader"></div> 
+            <div class="product-image-container">
+              <a class='product-list__img-link' href='{{ product.url }}'>
+                <img class='product-list__product-img' src='{{ product | img_url: 'master' }}' onload="this.closest('.product-list__product-block').classList.add('loaded')">
+              </a>
+            </div>
+            <a class='product-list__product-name' href='{{ product.url }}'>{{ product.title }}</a>
+            {% if product.compare_at_price > product.price and product.compare_at_price > 0 %}
+              <p class='product-list__product-price'>{{ product.price | money }}<span><strike style="margin-left: 10px;">{{ product.compare_at_price | money }}</strike></span></p>
+            {% else %}
+              {% assign available = false %}
+              {% for variant in product.variants %}
+                {% if variant.inventory_management == nil or variant.inventory_policy == 'continue' %}
+                  {% assign available = true %}
+                  {% break %}
+                {% elsif variant.inventory_quantity > 0 %}
+                  {% assign available = true %}
+                  {% break %}
+                {% endif %}
+              {% endfor %}
+              {% if available %}
+                <p class='product-list__product-price'>{{ product.price | money }}</p>
+              {% else %}
+                <p class='product-list__product-price'>{{ product.price | money }} — <strong>SOLD OUT</strong></p>
+              {% endif %}
+            {% endif %}
+          </div>
+        {%- endfor -%}  
+      </div>
+
+      {% unless settings.enable_infinity_scroll %}
+        {% if collection.products_count > 10 %}
+          <div class="pages">
+
+            <span class="span_left" style="opacity: {% if paginate.previous %}1{% else %}0.4{% endif %};">
+              {% if paginate.previous %}
+                <a href="{{ paginate.previous.url }}">
+              {% endif %}
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <g clip-path="url(#clip0_125_2)">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M14.1104 20L15.5 18.5946L7.23877 9.98688L8.11963 9.0688L8.11523 9.07385L15.4556 1.42655L14.0859 -4.19015e-07C12.0572 2.1136 6.39321 8.01453 4.5 9.98689C5.90611 11.4528 4.53486 10.0242 14.1104 20Z" fill="{{ settings.headings-color }}"/>
+                </g>
+                <defs>
+                  <clipPath id="clip0_125_2">
+                    <rect width="20" height="20" fill="white" transform="translate(0 20) rotate(-90)"/>
+                  </clipPath>
+                </defs>
+              </svg>
+              {% if paginate.previous %}
+                </a>
+              {% endif %}
+            </span>
+
+            {% for part in paginate.parts %}
+              {% if part.is_link %}
+                <span class="page-link page-navigation">
+                  <a href="{{ part.url }}">{{ part.title }}</a>
+                </span>
+              {% elsif part.title == '...' %}
+                <span class="page-dots">{{ part.title }}</span>
+              {% else %}
+                <span class="page-current page-navigation">{{ part.title }}</span>
+              {% endif %}
+            {% endfor %}
+
+            <span class="span_right" style="opacity: {% if paginate.next %}1{% else %}0.4{% endif %};">
+              {% if paginate.next %}
+                <a href="{{ paginate.next.url }}">
+              {% endif %}
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <g clip-path="url(#clip0_125_7)">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M5.88965 20L4.5 18.5946L12.7612 9.98688L11.8804 9.0688L11.8848 9.07385L4.54443 1.42655L5.91406 -4.19015e-07C7.94284 2.1136 13.6068 8.01453 15.5 9.98689C14.0939 11.4528 15.4651 10.0242 5.88965 20Z" fill="{{ settings.headings-color }}"/>
+                </g>
+                <defs>
+                  <clipPath id="clip0_125_7">
+                    <rect width="20" height="20" fill="white" transform="matrix(4.37114e-08 -1 -1 -4.37114e-08 20 20)"/>
+                  </clipPath>
+                </defs>
+              </svg>
+              {% if paginate.next %}
+                </a>
+              {% endif %}
+            </span>
+
+          </div>
+        {% endif %}
+      {% endunless %}
+
+  {% if settings.enable_infinity_scroll %}
+   <div id="loading-logo" style="display:none; text-align:center; margin-top:20px;">
+     {% if settings.scroll-logo != blank %}
+      <img src="{{ settings.scroll-logo | img_url: 'master' }}" alt="Loading...">
+     {% else %}
+      <h2>LOADING...</h2>
+     {% endif %}
+    </div>
+
+  <div id="pagination-data" data-current-page="1" data-max-pages="{{ paginate.pages }}"></div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    let currentPage = parseInt(document.getElementById('pagination-data').getAttribute('data-current-page'));
+    const maxPages = parseInt(document.getElementById('pagination-data').getAttribute('data-max-pages'));
+    let isLoading = false;
+    const productGrid = document.getElementById('product-list');
+    const loadingLogo = document.getElementById('loading-logo');
+
+    function loadMoreProducts() {
+      if (isLoading || currentPage >= maxPages) return;
+      isLoading = true;
+      loadingLogo.style.display = 'block';
+      currentPage++;
+
+      fetch({{ collection.url }}?page=${currentPage}&view=ajax)
+        .then(response => response.text())
+        .then(data => {
+          const parser = new DOMParser();
+          const newProductsHTML = parser.parseFromString(data, 'text/html').getElementById('product-list').innerHTML;
+
+          if (newProductsHTML.trim() !== '') {
+            productGrid.insertAdjacentHTML('beforeend', newProductsHTML);
+          }
+          
+          if (currentPage >= maxPages) {
+            window.removeEventListener('scroll', onScroll);
+          }
+
+          isLoading = false;
+          loadingLogo.style.display = 'none';
+        })
+        .catch(error => {
+          console.error('Error loading more products:', error);
+          isLoading = false;
+          loadingLogo.style.display = 'none';
+        });
+    }
+
+    function onScroll() {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
+        loadMoreProducts();
+      }
+    }
+
+    window.addEventListener('scroll', onScroll);
+  });
+</script>
+      {% endif %}
+
+    {%- endpaginate -%}
+  </div>
+</div>
