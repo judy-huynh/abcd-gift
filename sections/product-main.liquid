@@ -400,6 +400,61 @@
   }
 }
 
+/* ── Lightbox / zoom overlay ── */
+.product-lightbox {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+  overflow: auto;
+  padding: 40px;
+  box-sizing: border-box;
+}
+.product-lightbox.is-open {
+  display: flex;
+}
+.product-lightbox__close {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  font-size: 32px;
+  line-height: 1;
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  z-index: 10000;
+  padding: 0;
+}
+.product-lightbox__close:hover {
+  opacity: 0.7;
+}
+.product-lightbox__image {
+  display: block;
+  max-width: 90vw;
+  max-height: 90vh;
+  width: auto;
+  height: auto;
+  cursor: zoom-in;
+  transition: transform 0.2s ease;
+}
+.product-lightbox__image.is-zoomed {
+  max-width: none;
+  max-height: none;
+  transform: scale(1);
+  cursor: zoom-out;
+}
+/* Show the zoom-in cursor when hovering images in the main gallery */
+.figureImg .product__item-img {
+  cursor: zoom-in;
+}
+
 /* Mobile — bring the title closer to the product photo, keep it centered */
 @media screen and (max-width: 749px) {
   .product-title-container {
@@ -603,8 +658,55 @@
   </div>
 </div>
 
+<div id="product-lightbox" class="product-lightbox" role="dialog" aria-hidden="true" aria-label="Product image zoom">
+  <button type="button" class="product-lightbox__close" aria-label="Close">&times;</button>
+  <img class="product-lightbox__image" src="" alt="">
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  // ── Lightbox ──
+  var lightbox = document.getElementById('product-lightbox');
+  var lightboxImg = lightbox ? lightbox.querySelector('.product-lightbox__image') : null;
+  var lightboxClose = lightbox ? lightbox.querySelector('.product-lightbox__close') : null;
+
+  function openLightbox(src, alt) {
+    if (!lightbox || !src) return;
+    lightboxImg.src = src;
+    lightboxImg.alt = alt || '';
+    lightboxImg.classList.remove('is-zoomed');
+    lightbox.classList.add('is-open');
+    lightbox.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    if (!lightbox) return;
+    lightbox.classList.remove('is-open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    lightboxImg.classList.remove('is-zoomed');
+    document.body.style.overflow = '';
+  }
+  if (lightbox) {
+    // Click overlay (not on image or close) closes
+    lightbox.addEventListener('click', function(e) {
+      if (e.target === lightbox) closeLightbox();
+    });
+    // Close button
+    if (lightboxClose) lightboxClose.addEventListener('click', function(e) {
+      e.stopPropagation();
+      closeLightbox();
+    });
+    // Clicking the image inside toggles a further magnified zoom
+    if (lightboxImg) lightboxImg.addEventListener('click', function(e) {
+      e.stopPropagation();
+      lightboxImg.classList.toggle('is-zoomed');
+    });
+    // ESC to close
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && lightbox.classList.contains('is-open')) closeLightbox();
+    });
+  }
+
   const gallery = document.getElementById('gallery');
   const rawItems = Array.from(gallery.querySelectorAll('.product__item-img, .product__item-video'));
   const prevArrow = document.getElementById('prev-arrow');
@@ -831,12 +933,13 @@ function updateMediaPosition() {
     return ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0);
   }
 
+  // Image click opens the lightbox (arrows/dots still navigate the carousel)
   gallery.addEventListener('click', function(event) {
-    if (!isTouchDevice()) {
-      const x = event.clientX - gallery.getBoundingClientRect().left;
-      const totalWidth = gallery.offsetWidth;
-      const direction = x < totalWidth / 2 ? 'right' : 'left';
-      handleSwipe(direction);
+    // Let arrow/dot clicks fall through to their own handlers
+    if (event.target.closest('.image-navigation')) return;
+    var clickedImg = event.target.closest('.product__item-img');
+    if (clickedImg) {
+      openLightbox(clickedImg.src, clickedImg.alt);
     }
   });
 
