@@ -69,9 +69,15 @@
 .option-value--color.color-blue   { background: #1E4FA8; }
 .option-value--color.color-black  { background: #000000; }
 .option-value--color.color-white  { background: #FFFFFF; color: #000 !important; border-color: #ccc !important; }
-.option-value--color.color-green  { background: #94A15A; }
+.option-value--color.color-green  { background: #3F6B3E; }
 .option-value--color.color-grey,
-.option-value--color.color-gray   { background: #7A7A7A; }
+.option-value--color.color-gray   { background: #B5B5B5; }
+
+/* Per-product overrides: Warehouse Cargo Pants keep the darker charcoal gray */
+.page-width[data-product-handle*="warehouse-cargo"] .option-value--color.color-gray,
+.page-width[data-product-handle*="warehouse-cargo"] .option-value--color.color-grey {
+  background: #7A7A7A;
+}
 .option-value--color.color-navy   { background: #3B5998; }
 .option-value--color.color-red    { background: #C0322B; }
 .option-value--color.color-yellow { background: #EFC94C; color: #000 !important; }
@@ -420,7 +426,7 @@
 }
 </style>
 
-<div class="page-width">
+<div class="page-width" data-product-handle="{{ product.handle }}">
   {% assign current_variant = product.selected_or_first_available_variant %}
   {% assign featured_image = current_variant.featured_image | default: product.featured_image %}
 

@@ -63,9 +63,15 @@
   .color-swatch--blue   { background: #1E4FA8; }
   .color-swatch--black  { background: #000000; }
   .color-swatch--white  { background: #FFFFFF; }
-  .color-swatch--green  { background: #94A15A; }
-  .color-swatch--grey   { background: #7A7A7A; }
-  .color-swatch--gray   { background: #7A7A7A; }
+  .color-swatch--green  { background: #3F6B3E; }
+  .color-swatch--grey   { background: #B5B5B5; }
+  .color-swatch--gray   { background: #B5B5B5; }
+
+  /* Per-product overrides: Warehouse Cargo Pants keep the darker charcoal gray */
+  .product-list__product-block[data-product-handle*="warehouse-cargo"] .color-swatch--gray,
+  .product-list__product-block[data-product-handle*="warehouse-cargo"] .color-swatch--grey {
+    background: #7A7A7A;
+  }
   .color-swatch--navy   { background: #3B5998; }
   .color-swatch--red    { background: #C0322B; }
   .color-swatch--yellow { background: #EFC94C; }
@@ -89,20 +95,18 @@
     {% endif %}
     
     {% for product in products_to_display limit: section.settings.products_per_page %}
-      <div class='product-list__product-block fade-in'>
+      <div class='product-list__product-block fade-in' data-product-handle='{{ product.handle }}'>
         <a class='product-list__img-link' href='{{ product.url }}'>
           <img class='product-list__product-img' src='{{ product | img_url: 'master' }}' onload="this.closest('.product-list__product-block').classList.add('loaded')">
         </a>
         {%- for option in product.options_with_values -%}
           {%- assign opt_name = option.name | downcase -%}
           {%- if opt_name == 'color' or opt_name == 'colour' -%}
-            {%- if option.values.size > 1 -%}
-              <div class='product-list__swatches'>
-                {%- for value in option.values -%}
-                  <span class='color-swatch color-swatch--{{ value | handleize }}' title='{{ value }}' aria-label='{{ value }}'></span>
-                {%- endfor -%}
-              </div>
-            {%- endif -%}
+            <div class='product-list__swatches'>
+              {%- for value in option.values -%}
+                <span class='color-swatch color-swatch--{{ value | handleize }}' title='{{ value }}' aria-label='{{ value }}'></span>
+              {%- endfor -%}
+            </div>
           {%- endif -%}
         {%- endfor -%}
         <a class='product-list__product-name' href='{{ product.url }}'>{{ product.title }}</a>
