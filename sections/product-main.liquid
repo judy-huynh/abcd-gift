@@ -976,8 +976,8 @@ function updateMediaPosition() {
   });
 
   function updateCursor(itemElement) {
-    // Custom left/right arrow cursors disabled — the visible ← → arrows already indicate navigation
-    itemElement.style.cursor = items.length > 1 ? 'pointer' : 'auto';
+    // Magnifying-glass cursor hints that images are clickable to open the lightbox
+    itemElement.style.cursor = 'zoom-in';
     return;
     if (items.length > 1) {
       const rect = itemElement.getBoundingClientRect();
