@@ -191,11 +191,10 @@
 }
 .figureImg {
     width: 100% !important;
-    {% if product.images.size > 1 %}
-    padding-bottom: 0rem !important;
-    {% else %}
+    /* Always keep a gap under the photo. This was 0 for multi-image products on
+       the assumption the dots row below would provide the spacing, but that row
+       is a flex sibling of the images and renders outside the visible box. */
     padding-bottom: 1.5rem !important;
-    {% endif %}
 }
 }
 /* ── Size option hover ── */
@@ -477,6 +476,21 @@
   }
   .figureImg {
     margin-top: 0 !important;
+  }
+
+  /* The desktop left column has no visible content on mobile (its description is
+     display:none in main.css) but kept a 2rem top padding, leaving a 32px empty
+     band that pushed the photo away from the title. */
+  .product-info__pc {
+    padding-top: 0 !important;
+  }
+
+  /* main.css keeps padding-left: 24px on .product-info__main and its mobile rule
+     overrides only the width, so everything under the photo (swatches, sizes,
+     add-to-cart, description) sat 12px right of center. */
+  .product-info__main {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
 }
 </style>
