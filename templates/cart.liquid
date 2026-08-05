@@ -114,7 +114,14 @@ button.cart__quantity-btn svg {
         </div>
       {% endfor %}
       <div class="checkout-elements">
-        <p class="cart__total">Total: {% render 'price', amount: cart.total_price %}</p>
+        {%- comment -%}
+          Prices read as bare numbers everywhere else, which is fine while
+          browsing but too vague right before paying. The cart states the
+          currency outright so nobody reaches checkout unsure what they are
+          being charged in. The amount lives in its own span so the quantity
+          script can rewrite the number without touching the currency code.
+        {%- endcomment -%}
+        <p class="cart__total">Total: <span class="cart__total-amount">{% render 'price', amount: cart.total_price %}</span> <span class="cart__total-currency">{{ cart.currency.iso_code }}</span></p>
         <input class='cart__submit-btn button' type="submit" name="checkout" value="Checkout">
       </div>
     </form>
@@ -215,10 +222,13 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function updateCartTotal(cart) {
-    const totalElement = document.querySelector('.cart__total');
-    if (totalElement) {
+    // Rewrite only the number. This used to replace the whole line with a
+    // hardcoded "$", which both contradicted the bare prices shown everywhere
+    // else and wiped out the currency code beside it.
+    const amountElement = document.querySelector('.cart__total-amount');
+    if (amountElement) {
       var _t = cart.total_price / 100;
-      totalElement.textContent = `Total: $${_t % 1 === 0 ? _t : _t.toFixed(2)}`;
+      amountElement.textContent = _t % 1 === 0 ? _t : _t.toFixed(2);
     }
   }
 
