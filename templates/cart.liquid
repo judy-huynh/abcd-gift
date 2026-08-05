@@ -87,7 +87,7 @@ button.cart__quantity-btn svg {
           </div>
           <p class='cart__item-final-price'>
             <span class='cart__item-title-span'>Price</span>
-            <span class='cart__item-main-span'>{{ item.final_price | money }}</span>
+            <span class='cart__item-main-span'>{% render 'price', amount: item.final_price %}</span>
           </p>
           <!-- Кнопки для изменения количества товаров -->
           <div class='cart__item-quantity'>
@@ -114,7 +114,7 @@ button.cart__quantity-btn svg {
         </div>
       {% endfor %}
       <div class="checkout-elements">
-        <p class="cart__total">Total: {{ cart.total_price | money }}</p>
+        <p class="cart__total">Total: {% render 'price', amount: cart.total_price %}</p>
         <input class='cart__submit-btn button' type="submit" name="checkout" value="Checkout">
       </div>
     </form>

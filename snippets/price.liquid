@@ -1,0 +1,19 @@
+{%- comment -%}
+  Bare price: no symbol, no currency code, no trailing .00.
+
+  Shopify applies the store's custom money format only to the primary currency.
+  Any other Markets currency falls back to Shopify's own formatting, so CAD
+  renders "$35.00 CAD" where USD renders "35". Formatting here instead keeps
+  every market looking the same.
+
+  Amounts that are not whole keep their cents, which matches how the
+  add-to-cart script in theme.liquid formats the button.
+
+  Usage: {% render 'price', amount: product.price %}
+{%- endcomment -%}
+{%- assign _price = amount | money_without_currency | strip_html | strip -%}
+{%- if _price contains '.00' -%}
+  {{- _price | remove: '.00' -}}
+{%- else -%}
+  {{- _price -}}
+{%- endif -%}

@@ -99,9 +99,9 @@
                   </a>
                   <a class='product-list__product-name' href='{{ related_product.url }}'>{{ related_product.title }}</a>
                   {% if related_product.compare_at_price > related_product.price %}
-                    <p class='product-list__product-price'>{{ related_product.price | money_with_currency }}<span><strike style="margin-left: 10px;">{{ related_product.compare_at_price | money_with_currency }}</strike></span></p>
+                    <p class='product-list__product-price'>{% render 'price', amount: related_product.price %}<span><strike style="margin-left: 10px;">{% render 'price', amount: related_product.compare_at_price %}</strike></span></p>
                   {% else %}
-                    <p class='product-list__product-price'>{{ related_product.price | money_with_currency }}</p>
+                    <p class='product-list__product-price'>{% render 'price', amount: related_product.price %}</p>
                   {% endif %}
                 </div>
                 {% assign related_products_added = related_products_added | plus: 1 %}

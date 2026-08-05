@@ -159,7 +159,7 @@
         {%- endfor -%}
         <a class='product-list__product-name' href='{{ product.url }}'>{{ product.title }}</a>
         {% if product.compare_at_price > product.price and product.compare_at_price > 0 %}
-          <p class='product-list__product-price'>{{ product.price | money_with_currency }}<span><strike style="margin-left: 10px;">{{ product.compare_at_price | money_with_currency }}</strike></span></p>
+          <p class='product-list__product-price'>{% render 'price', amount: product.price %}<span><strike style="margin-left: 10px;">{% render 'price', amount: product.compare_at_price %}</strike></span></p>
         {% else %}
           {% assign available = false %}
           {% for variant in product.variants %}
@@ -172,9 +172,9 @@
             {% endif %}
           {% endfor %}
           {% if available %}
-            <p class='product-list__product-price'>{{ product.price | money_with_currency }}</p>
+            <p class='product-list__product-price'>{% render 'price', amount: product.price %}</p>
           {% else %}
-            <p class='product-list__product-price'>{{ product.price | money_with_currency }} — <strong>SOLD OUT</strong></p>
+            <p class='product-list__product-price'>{% render 'price', amount: product.price %} — <strong>SOLD OUT</strong></p>
           {% endif %}
         {% endif %}
       </div>

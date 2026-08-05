@@ -616,7 +616,7 @@
                 
                 
                 {% if current_variant.available %}
-  <button class='product-info__cart-btn button' type="submit">ADD TO CART — {{ current_variant.price | money }}</button>
+  <button class='product-info__cart-btn button' type="submit">ADD TO CART — {% render 'price', amount: current_variant.price %}</button>
 {% else %}
   <button class='product-info__cart-btn button' id="soldout" type="button" disabled>Sold Out</button>
 {% endif %}
