@@ -225,6 +225,34 @@
       width: {{ section.settings.logo-size-mobile }}px;
     }
   }
+
+  /* Mobile — run the logo edge to edge with an even 6px of white on all four
+     sides. .page-width's 15px plus .logo-wrapper's 10px were costing 50px of
+     logo width at a 390px viewport; the nav keeps its own 15px so it does not
+     touch the screen edges. display:block on the logo removes the 3.5px of
+     inline descender space that otherwise made the gap beneath it uneven. The
+     scrolled state is pinned to the same padding so the bar holds one height. */
+  @media screen and (max-width: 749px) {
+    .sticky-header .page-width {
+      padding-left: 0;
+      padding-right: 0;
+    }
+    .right-nav {
+      padding: 0 15px;
+    }
+    .logo-wrapper,
+    .sticky-header.scrolled .logo-wrapper {
+      padding: 6px;
+    }
+    .header__heading-link,
+    .logo-wrapper .header-logo {
+      display: block;
+    }
+    .sticky-header,
+    .sticky-header.scrolled {
+      padding-bottom: 4px;
+    }
+  }
 </style>
 <div class="sticky-header">
 <div class="page-width">
