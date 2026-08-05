@@ -290,10 +290,28 @@
 document.addEventListener('DOMContentLoaded', function() {
   var stickyHeader = document.querySelector('.sticky-header');
   if (stickyHeader) {
+    // Collapsing the header makes it shorter, and because it sits in normal flow
+    // the document shrinks with it. Chrome's scroll anchoring then shifts scrollY
+    // by that same amount to hold the view steady, which fires another scroll
+    // event. With one threshold that feedback never settled: land anywhere in a
+    // narrow band and the header collapsed, anchoring pulled scrollY back under
+    // the threshold, the header expanded, anchoring pushed it back, at frame
+    // rate, forever, with no input from the user.
+    //
+    // Separate collapse and expand thresholds fix it. The gap between them has
+    // to exceed the largest height change (34px on desktop, 10px on mobile) so
+    // that an anchoring adjustment can never carry scrollY across the opposite
+    // threshold. 50px of separation leaves 16px of margin at both ends.
+    var COLLAPSE_AT = 90;
+    var EXPAND_AT = 40;
+    var isCollapsed = stickyHeader.classList.contains('scrolled');
     var onScroll = function() {
-      if (window.scrollY > 40) {
+      var y = window.scrollY;
+      if (!isCollapsed && y > COLLAPSE_AT) {
+        isCollapsed = true;
         stickyHeader.classList.add('scrolled');
-      } else {
+      } else if (isCollapsed && y < EXPAND_AT) {
+        isCollapsed = false;
         stickyHeader.classList.remove('scrolled');
       }
     };
