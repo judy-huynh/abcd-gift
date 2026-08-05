@@ -152,12 +152,19 @@
 {% endif %}
 
 @media screen and (max-width: 749px){
+/* .figureImg is a flex row holding every product image. Left in normal flow the
+   dots/arrows row became a flex sibling of the photos and was laid out past the
+   last one, then clipped away by overflow:hidden. Pinning it to the bottom of
+   the gallery takes it out of that row so it renders where it belongs. */
 .image-navigation {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 5px;
-  margin-bottom: 1.5rem;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
 }
 
 .nav-arrow {
@@ -178,6 +185,15 @@
   border: 1px solid {{ settings.product_dot_active }};
   border-radius: 50%;
   cursor: pointer;
+  position: relative;
+}
+
+/* Invisible tap target so a thumb can hit a 10px dot. Clicks on the pseudo
+   element still count as clicks on the dot itself. */
+.nav-dot::after {
+  content: '';
+  position: absolute;
+  inset: -12px;
 }
 
 .nav-dot.active {
@@ -191,10 +207,13 @@
 }
 .figureImg {
     width: 100% !important;
-    /* Always keep a gap under the photo. This was 0 for multi-image products on
-       the assumption the dots row below would provide the spacing, but that row
-       is a flex sibling of the images and renders outside the visible box. */
+    position: relative;
+    {% if product.images.size > 1 or product.media.size > 1 %}
+    /* Reserve a band at the bottom for the pinned dots/arrows row. */
+    padding-bottom: 2.75rem !important;
+    {% else %}
     padding-bottom: 1.5rem !important;
+    {% endif %}
 }
 }
 /* ── Size option hover ── */
@@ -761,6 +780,11 @@ document.addEventListener('DOMContentLoaded', function() {
       return { item: item, rank: currentRank };
     });
     ranked.sort(function(a, b) { return a.rank - b.rank; });
+    // Remember each image's color so back views, which are no variant's featured
+    // image, can still tell the swatches which color is on screen.
+    ranked.forEach(function(r) {
+      if (r.rank !== Infinity) r.item.dataset.colorRank = r.rank;
+    });
     items = ranked.map(function(r) { return r.item; });
   } else {
     items = rawItems;
@@ -786,17 +810,26 @@ document.addEventListener('DOMContentLoaded', function() {
     var currentItem = items[currentIndex];
     if (!currentItem) return;
     var currentImgId = currentItem.getAttribute('data-image-id');
-    if (!currentImgId) return;
-    var matchingVariant = productVariants.find(function(v) {
+    var matchingVariant = currentImgId && productVariants.find(function(v) {
       return v.featured_image && String(v.featured_image.id) === currentImgId;
     });
-    if (!matchingVariant) return;
+
+    var targetColor = null;
+    if (matchingVariant) {
+      targetColor = matchingVariant['option' + colorOptionPosition];
+    } else if (currentItem.dataset.colorRank !== undefined) {
+      // Back views are no variant's featured image, so fall back to the color
+      // worked out when the gallery was reordered. Without this the swatch keeps
+      // the previously selected color and can disagree with the photo on screen,
+      // which would let someone add the wrong color to their cart.
+      targetColor = colorOrder[Number(currentItem.dataset.colorRank)];
+    }
+    if (!targetColor) return;
+
     var colorButtons = document.querySelectorAll('.option-value--color');
     for (var i = 0; i < colorButtons.length; i++) {
       var btn = colorButtons[i];
-      var pos = btn.getAttribute('data-option');
-      var val = btn.getAttribute('data-value');
-      if (matchingVariant['option' + pos] === val && !btn.classList.contains('active')) {
+      if (btn.getAttribute('data-value') === targetColor && !btn.classList.contains('active')) {
         btn.click();
         break;
       }
