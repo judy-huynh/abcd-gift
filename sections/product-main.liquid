@@ -486,7 +486,11 @@
     padding: 0;
     line-height: 1.2em;
     text-align: center !important;
-    max-width: 90% !important;
+    /* nowrap and the full container width let the auto-fit script size the title
+       the way it already does on desktop. Without nowrap the text would wrap to
+       two lines instead of shrinking, and the script's width test never fires. */
+    white-space: nowrap;
+    max-width: 100% !important;
     display: block !important;
   }
   .product-info {
@@ -1101,12 +1105,12 @@ function updateMediaPosition() {
     function fitProductTitle() {
       var title = document.querySelector('.product-info__title--above');
       if (!title) return;
-      if (!window.matchMedia('(min-width: 749px)').matches) {
-        title.style.fontSize = '';
-        return;
-      }
-      var maxSize = 42;
-      var minSize = 16;
+      // Mobile used to opt out of auto-fit and sit at a flat 21px. It now fits
+      // the same way desktop does, just from a smaller ceiling, so short titles
+      // get bigger while a long one shrinks instead of wrapping.
+      var isDesktop = window.matchMedia('(min-width: 749px)').matches;
+      var maxSize = isDesktop ? 42 : 26;
+      var minSize = isDesktop ? 16 : 17;
       var parentWidth = title.parentElement.clientWidth;
       title.style.fontSize = maxSize + 'px';
       var size = maxSize;
