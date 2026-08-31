@@ -1,7 +1,8 @@
 # ABCD working notes
 
 State of play for whoever picks this up next, human or agent. Read this before
-touching anything. Last updated 30 Aug 2026.
+touching anything. `BLOG-SYSTEM.md` holds the blog pipeline design.
+Last updated 30 Aug 2026.
 
 ## Where things are
 
@@ -95,6 +96,15 @@ into an Admin API token needs a hosted OAuth callback, which is a real project.
 Hence the browser-driven approach above, which suits draft-for-approval anyway.
 There is a stray unused app called `ABCD Blog` in the dev dashboard, safe to delete.
 
+### The pipeline design
+
+Agreed 30 Aug 2026, **not built**. Full design in `BLOG-SYSTEM.md`. Short version:
+RSS in, scored, shortlisted, two approval gates, posted through her browser, with a
+Search Console loop feeding back into scoring. Free replacement for the paid
+MonitoRSS setup. Cross-feed corroboration is the only trend signal that genuinely
+works; nothing predicts conversion before publishing. Hard cadence cap of about one
+post a week, enforced in code, because volume is the demotion risk.
+
 ### Blocked on
 
 - **Judy's voice.** No copy gets drafted until we have real samples. Instagram
@@ -110,6 +120,12 @@ There is a stray unused app called `ABCD Blog` in the dev dashboard, safe to del
 
 `TEMPLATE TEST — delete me` is sitting in Blog posts, Hidden. It was the render
 test. Safe to delete.
+
+## Reference pages made along the way
+
+- Size guide directions: https://claude.ai/code/artifact/c177563e-c015-45d4-bc34-b90f9f63abbd
+- Blog layout mockups, galleries and shop block: https://claude.ai/code/artifact/873c462b-47fc-4857-ace2-74636fe99413
+- The ABCD Desk, blog pipeline design: https://claude.ai/code/artifact/47e50d9f-8d6c-43a5-9428-6f84246ea421
 
 ## Two SEO constraints that shaped all of the above
 
