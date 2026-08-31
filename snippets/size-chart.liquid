@@ -8,6 +8,11 @@
 
   Measurements are Tapstitch's own, garment measured flat, in centimetres.
   Inches are converted in JS at 2.54 so there is only one set of numbers to keep true.
+
+  The diagrams are Tapstitch's, copied into assets rather than hotlinked off their
+  CDN. Their callout numbers run in the same order as row_labels below, so the
+  how-to-measure list numbers itself from the row order. Reorder the rows and the
+  numbers stop matching the picture.
 {%- endcomment -%}
 
 {%- assign chart_key = '' -%}
@@ -35,18 +40,34 @@
     {%- assign sizes = 'XS,S,M,L,XL,XXL' | split: ',' -%}
     {%- assign row_labels = 'Length,Shoulder,Chest,Sleeve length' | split: ',' -%}
     {%- assign row_values = '72,74,76,78,80,82|54.7,56.2,57.7,59.5,61.3,63.1|55.5,57.5,59.5,62,64.5,67|22.9,23.4,23.9,24.5,25.1,25.7' | split: '|' -%}
+    {%- assign diagram = 'size-guide-tshirt.jpg' -%}
+    {%- assign diagram_w = 700 -%}
+    {%- assign diagram_h = 934 -%}
+    {%- assign diagram_alt = 'T-shirt laid flat with the four measurements marked' -%}
   {%- when 'essential' -%}
     {%- assign sizes = 'S,M,L,XL,2XL,3XL' | split: ',' -%}
     {%- assign row_labels = 'Length,Shoulder,Chest,Sleeve length' | split: ',' -%}
     {%- assign row_values = '67.5,69.5,72,74.5,76.5,78|48,50.5,53,55.5,58,60.5|50,52.5,55,57.5,60,62.5|21.5,22,22.5,23,23.5,24' | split: '|' -%}
+    {%- assign diagram = 'size-guide-tshirt.jpg' -%}
+    {%- assign diagram_w = 700 -%}
+    {%- assign diagram_h = 934 -%}
+    {%- assign diagram_alt = 'T-shirt laid flat with the four measurements marked' -%}
   {%- when 'crop' -%}
     {%- assign sizes = 'S,M,L,XL' | split: ',' -%}
     {%- assign row_labels = 'Length,Chest,Sleeve length' | split: ',' -%}
     {%- assign row_values = '38,38,39,40|38.5,40.5,43,45.5|22.5,23,23.5,24' | split: '|' -%}
+    {%- assign diagram = 'size-guide-crop.png' -%}
+    {%- assign diagram_w = 940 -%}
+    {%- assign diagram_h = 934 -%}
+    {%- assign diagram_alt = 'Crop t-shirt laid flat with the three measurements marked' -%}
   {%- when 'hoodie' -%}
     {%- assign sizes = 'S,M,L,XL,2XL' | split: ',' -%}
     {%- assign row_labels = 'Length,Shoulder,Chest,Sleeve length' | split: ',' -%}
     {%- assign row_values = '70,72,74,76,78|65,67,69,71,73|66,68,70,72,74|53.5,54.5,55.5,56.5,57.5' | split: '|' -%}
+    {%- assign diagram = 'size-guide-hoodie.jpg' -%}
+    {%- assign diagram_w = 700 -%}
+    {%- assign diagram_h = 932 -%}
+    {%- assign diagram_alt = 'Hoodie laid flat with the four measurements marked' -%}
 {%- endcase -%}
 
 {%- if sizes != blank -%}
@@ -151,17 +172,56 @@
     line-height: 1.5;
     color: #666;
   }
-  .size-guide-how { margin: 0.9rem 0 0; }
-  .size-guide-how dt {
+  /* Diagram beside the list so a number in the picture is next to its own line. */
+  .size-guide-measure {
+    display: flex;
+    gap: 0.9rem;
+    align-items: flex-start;
+    margin-top: 1rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid #000;
+  }
+  .size-guide-diagram {
+    flex: 0 0 34%;
+    max-width: 170px;
+    height: auto;
+    display: block;
+  }
+  .size-guide-how {
+    flex: 1 1 auto;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+  }
+  .size-guide-how li {
+    display: flex;
+    gap: 7px;
+    align-items: flex-start;
+    margin-bottom: 0.6rem;
+  }
+  .size-guide-how li:last-child { margin-bottom: 0; }
+  .size-guide-num {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #000;
+    color: #fff;
+    font-size: 10px;
+    line-height: 16px;
+    text-align: center;
+  }
+  .size-guide-how b {
+    display: block;
     font-size: 11px;
+    font-weight: 400;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    margin-top: 0.5rem;
   }
-  .size-guide-how dd {
-    margin: 0;
+  .size-guide-how span span {
     font-size: 11px;
-    line-height: 1.5;
+    line-height: 1.45;
     color: #666;
   }
 </style>
@@ -204,14 +264,37 @@
 
     <p class="size-guide-note">Garment measured flat, not body measurements. Allow 1&ndash;3 cm variance.</p>
 
-    <dl class="size-guide-how">
-      <dt>Length</dt>
-      <dd>Shoulder seam at the collar, straight down to the hem.</dd>
-      <dt>Chest</dt>
-      <dd>Armpit to armpit, laid flat.</dd>
-      <dt>Sleeve length</dt>
-      <dd>Shoulder seam at the armhole to the cuff.</dd>
-    </dl>
+    <div class="size-guide-measure">
+      {%- comment -%}
+        Held in data-src and swapped in when the modal opens, so the diagram costs
+        nothing on page load but is never left to a lazy-load that may not fire
+        while its container is display:none.
+      {%- endcomment -%}
+      <img class="size-guide-diagram"
+           id="SizeGuideDiagram"
+           data-src="{{ diagram | asset_url }}"
+           alt="{{ diagram_alt }}"
+           width="{{ diagram_w }}"
+           height="{{ diagram_h }}">
+      <ol class="size-guide-how">
+        {%- for label in row_labels -%}
+          <li>
+            <span class="size-guide-num">{{ forloop.index }}</span>
+            <span>
+              <b>{{ label }}</b>
+              <span>
+                {%- case label -%}
+                  {%- when 'Length' -%}Shoulder seam at the collar, straight down to the hem.
+                  {%- when 'Shoulder' -%}Seam to seam, straight across the back.
+                  {%- when 'Chest' -%}Armpit to armpit, laid flat.
+                  {%- when 'Sleeve length' -%}Shoulder seam at the armhole to the cuff.
+                {%- endcase -%}
+              </span>
+            </span>
+          </li>
+        {%- endfor -%}
+      </ol>
+    </div>
   </div>
 </div>
 
@@ -227,6 +310,8 @@
     var lastFocus = null;
 
     function open() {
+      var diagram = document.getElementById('SizeGuideDiagram');
+      if (diagram && !diagram.src) diagram.src = diagram.getAttribute('data-src');
       lastFocus = document.activeElement;
       overlay.classList.add('is-open');
       document.body.style.overflow = 'hidden';
