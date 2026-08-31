@@ -236,8 +236,8 @@
     </div>
 
     <div class="size-guide-units" id="SizeGuideUnits">
-      <button type="button" class="size-guide-unit is-on" data-unit="cm">CM</button>
-      <button type="button" class="size-guide-unit" data-unit="in">IN</button>
+      <button type="button" class="size-guide-unit is-on" data-unit="in">IN</button>
+      <button type="button" class="size-guide-unit" data-unit="cm">CM</button>
     </div>
 
     <div class="size-guide-scroll">
@@ -342,6 +342,8 @@
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && overlay.classList.contains('is-open')) close();
     });
+
+    setUnit('in');
 
     units.addEventListener('click', function (e) {
       var btn = e.target.closest('.size-guide-unit');
