@@ -351,8 +351,14 @@
                   </div>
                 {% endif %}
 
-                {% if article.tags.size > 0 %}
-                  <span class="post-card__tag">{{ article.tags.first }}</span>
+                {%- assign card_tag = '' -%}
+                {%- for tag in article.tags -%}
+                  {%- unless tag contains 'shop:' -%}
+                    {%- if card_tag == '' -%}{%- assign card_tag = tag -%}{%- endif -%}
+                  {%- endunless -%}
+                {%- endfor -%}
+                {% if card_tag != '' %}
+                  <span class="post-card__tag">{{ card_tag }}</span>
                 {% endif %}
 
                 <h3 class="post-card__title">{{ article.title }}</h3>

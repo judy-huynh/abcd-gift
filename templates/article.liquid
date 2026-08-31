@@ -468,6 +468,128 @@
     text-decoration: underline;
   }
 
+  /* ── In-post gallery ──
+     The pipeline writes <figure class="article-gallery"> with two or three <img>
+     children into the article body; add --3 for three across. Everything else in
+     the body still gets the plain .article-content img rules. */
+  .article-content .article-gallery {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 2rem 0;
+  }
+
+  .article-content .article-gallery--3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .article-content .article-gallery img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    margin: 0;
+    cursor: zoom-in;
+  }
+
+  .article-content .article-gallery figcaption {
+    grid-column: 1 / -1;
+    font-size: 12px;
+    line-height: 1.5;
+    opacity: 0.45;
+  }
+
+  /* ── Shop this post ── */
+  .article-shop {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #000;
+  }
+
+  .article-shop__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .article-shop__head h2 {
+    font-size: 13px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .article-shop__all {
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    white-space: nowrap;
+  }
+
+  .article-shop__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .article-shop__card {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .article-shop__media {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: #f2f2f2;
+    margin-bottom: 0.55rem;
+  }
+
+  .article-shop__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    margin: 0;
+    transition: transform 0.4s ease;
+  }
+
+  .article-shop__card:hover .article-shop__media img {
+    transform: scale(1.03);
+  }
+
+  .article-shop__soldout {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    background: #000;
+    color: #fff;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 7px;
+  }
+
+  .article-shop__name {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    line-height: 1.3;
+  }
+
+  .article-shop__price {
+    font-size: 12px;
+    opacity: 0.55;
+    margin-top: 0.15rem;
+  }
+
   /* ── Responsive ── */
   @media screen and (max-width: 999px) {
     .article-layout {
@@ -522,11 +644,17 @@
       min-width: unset;
     }
   }
+
+  @media screen and (max-width: 749px) {
+    .article-content .article-gallery--3 { grid-template-columns: 1fr 1fr; }
+    .article-shop__grid { grid-template-columns: 1fr 1fr; }
+  }
+
 </style>
 
 {%- comment -%} ── Full-width hero image with lightbox trigger ── {%- endcomment -%}
 {% if article.image %}
-  <div class="article-hero" onclick="document.getElementById('articleLightbox').classList.add('article-lightbox--active')" role="button" tabindex="0" aria-label="View full image">
+  <div class="article-hero" data-lightbox="{{ article.image | image_url: width: 2400 }}" role="button" tabindex="0" aria-label="View full image">
     <img
       src="{{ article.image | image_url: width: 1800 }}"
       alt="{{ article.image.alt | default: article.title | escape }}"
@@ -539,19 +667,20 @@
     </button>
   </div>
 
-  {%- comment -%} ── Lightbox overlay ── {%- endcomment -%}
-  <div class="article-lightbox" id="articleLightbox" onclick="this.classList.remove('article-lightbox--active')">
-    <button class="article-lightbox__close" type="button" aria-label="Close lightbox">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      Close
-    </button>
-    <img
-      src="{{ article.image | image_url: width: 2400 }}"
-      alt="{{ article.image.alt | default: article.title | escape }}"
-      onclick="event.stopPropagation()"
-      loading="lazy">
-  </div>
 {% endif %}
+
+{%- comment -%}
+  ── Lightbox overlay ──
+  Shared by the hero and by every in-post gallery image, so it lives outside the
+  featured-image check: a post can have galleries and no hero.
+{%- endcomment -%}
+<div class="article-lightbox" id="articleLightbox">
+  <button class="article-lightbox__close" type="button" aria-label="Close lightbox">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    Close
+  </button>
+  <img id="articleLightboxImg" alt="">
+</div>
 
 <div class="article-page">
 
@@ -580,10 +709,68 @@
         {{ article.content }}
       </div>
 
-      {%- comment -%} ── Tags (bottom) ── {%- endcomment -%}
-      {% if article.tags.size > 0 %}
+      {%- comment -%}
+        ── Shop this post ──
+        Products come from `shop:<handle>` tags on the article, looked up live so
+        price and sold-out state are never stale. No shop tags means no block: a
+        post about someone else's brand should not carry a half-empty product row.
+      {%- endcomment -%}
+      {%- assign shop_handles = '' -%}
+      {%- for tag in article.tags -%}
+        {%- if tag contains 'shop:' -%}
+          {%- assign handle = tag | remove: 'shop:' | strip | downcase -%}
+          {%- assign shop_handles = shop_handles | append: handle | append: ',' -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {%- assign shop_handles = shop_handles | split: ',' -%}
+
+      {%- if shop_handles.size > 0 -%}
+        {%- capture shop_cards -%}
+          {%- for handle in shop_handles -%}
+            {%- assign shop_product = all_products[handle] -%}
+            {%- if shop_product.handle != blank -%}
+              <a class="article-shop__card" href="{{ shop_product.url }}">
+                <div class="article-shop__media">
+                  {% if shop_product.featured_image %}
+                    <img src="{{ shop_product.featured_image | image_url: width: 600 }}"
+                         alt="{{ shop_product.featured_image.alt | default: shop_product.title | escape }}"
+                         width="600"
+                         height="600"
+                         loading="lazy">
+                  {% endif %}
+                  {% unless shop_product.available %}
+                    <span class="article-shop__soldout">Sold out</span>
+                  {% endunless %}
+                </div>
+                <div class="article-shop__name">{{ shop_product.title }}</div>
+                <div class="article-shop__price">{% render 'price', amount: shop_product.price %}</div>
+              </a>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endcapture -%}
+
+        {%- if shop_cards != blank -%}
+          <section class="article-shop">
+            <div class="article-shop__head">
+              <h2>Shop this post</h2>
+              <a class="article-shop__all" href="/collections/all">All products</a>
+            </div>
+            <div class="article-shop__grid">{{ shop_cards }}</div>
+          </section>
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- comment -%} ── Tags (bottom). shop: tags are plumbing, not topics. ── {%- endcomment -%}
+      {%- assign visible_tags = '' -%}
+      {%- for tag in article.tags -%}
+        {%- unless tag contains 'shop:' -%}
+          {%- assign visible_tags = visible_tags | append: tag | append: '~' -%}
+        {%- endunless -%}
+      {%- endfor -%}
+      {%- assign visible_tags = visible_tags | split: '~' -%}
+      {% if visible_tags.size > 0 %}
         <div class="article-tags-top" style="margin-top: 2rem;">
-          {% for tag in article.tags %}
+          {% for tag in visible_tags %}
             <a class="article-tag-pill" href="{{ blog.url }}/tagged/{{ tag | handleize }}">{{ tag }}</a>
           {% endfor %}
         </div>
@@ -663,6 +850,47 @@
 </div>
 
 <script>
+  /* ── Lightbox: the hero and every in-post gallery image share one overlay ── */
+  (function () {
+    var lb = document.getElementById('articleLightbox');
+    var lbImg = document.getElementById('articleLightboxImg');
+    if (!lb || !lbImg) return;
+
+    function open(src, alt) {
+      if (!src) return;
+      lbImg.src = src;
+      lbImg.alt = alt || '';
+      lb.classList.add('article-lightbox--active');
+    }
+
+    function close() {
+      lb.classList.remove('article-lightbox--active');
+    }
+
+    var hero = document.querySelector('.article-hero');
+    if (hero) {
+      hero.addEventListener('click', function () {
+        open(hero.getAttribute('data-lightbox'), hero.querySelector('img') ? hero.querySelector('img').alt : '');
+      });
+      hero.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); hero.click(); }
+      });
+    }
+
+    /* Gallery images are authored into the body, so bind by delegation. */
+    var content = document.querySelector('.article-content');
+    if (content) {
+      content.addEventListener('click', function (e) {
+        var img = e.target.closest('.article-gallery img');
+        if (img) open(img.currentSrc || img.src, img.alt);
+      });
+    }
+
+    lb.addEventListener('click', function (e) {
+      if (e.target !== lbImg) close();
+    });
+  })();
+
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
       var lb = document.getElementById('articleLightbox');
