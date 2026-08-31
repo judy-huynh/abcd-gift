@@ -1,0 +1,271 @@
+{%- comment -%}
+  Size guide modal for the product page.
+
+  Which chart a product gets is resolved twice: a `chart-<key>` product tag wins,
+  otherwise the handle lists below. Add a tag in the admin and a new product
+  inherits an existing chart without a theme edit. Products that match neither
+  render nothing at all, so the link never appears next to numbers we do not have.
+
+  Measurements are Tapstitch's own, garment measured flat, in centimetres.
+  Inches are converted in JS at 2.54 so there is only one set of numbers to keep true.
+{%- endcomment -%}
+
+{%- assign chart_key = '' -%}
+{%- for tag in product.tags -%}
+  {%- if tag contains 'chart-' -%}
+    {%- assign chart_key = tag | remove: 'chart-' | downcase -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- if chart_key == blank -%}
+  {%- assign tee_handles = 'new-house-t-shirt,new-guestlist-t-shirt,techno-20-t-shirt' | split: ',' -%}
+  {%- assign crop_handles = 'guestlist-crop-t-shirt,house-crop-t-shirt,techno-crop-t-shirt' | split: ',' -%}
+  {%- assign hoodie_handles = 'logo-hoodie,logo-hoodie-1,house-20-hoodie,techno-20-hoodie' | split: ',' -%}
+  {%- assign essential_handles = 'nfp-t-shirt' | split: ',' -%}
+  {%- if tee_handles contains product.handle -%}{%- assign chart_key = 'tee' -%}
+  {%- elsif crop_handles contains product.handle -%}{%- assign chart_key = 'crop' -%}
+  {%- elsif hoodie_handles contains product.handle -%}{%- assign chart_key = 'hoodie' -%}
+  {%- elsif essential_handles contains product.handle -%}{%- assign chart_key = 'essential' -%}
+  {%- endif -%}
+{%- endif -%}
+
+{%- assign sizes = '' -%}
+{%- case chart_key -%}
+  {%- when 'tee' -%}
+    {%- assign sizes = 'XS,S,M,L,XL,XXL' | split: ',' -%}
+    {%- assign row_labels = 'Length,Shoulder,Chest,Sleeve length' | split: ',' -%}
+    {%- assign row_values = '72,74,76,78,80,82|54.7,56.2,57.7,59.5,61.3,63.1|55.5,57.5,59.5,62,64.5,67|22.9,23.4,23.9,24.5,25.1,25.7' | split: '|' -%}
+  {%- when 'essential' -%}
+    {%- assign sizes = 'S,M,L,XL,2XL,3XL' | split: ',' -%}
+    {%- assign row_labels = 'Length,Shoulder,Chest,Sleeve length' | split: ',' -%}
+    {%- assign row_values = '67.5,69.5,72,74.5,76.5,78|48,50.5,53,55.5,58,60.5|50,52.5,55,57.5,60,62.5|21.5,22,22.5,23,23.5,24' | split: '|' -%}
+  {%- when 'crop' -%}
+    {%- assign sizes = 'S,M,L,XL' | split: ',' -%}
+    {%- assign row_labels = 'Length,Chest,Sleeve length' | split: ',' -%}
+    {%- assign row_values = '38,38,39,40|38.5,40.5,43,45.5|22.5,23,23.5,24' | split: '|' -%}
+  {%- when 'hoodie' -%}
+    {%- assign sizes = 'S,M,L,XL,2XL' | split: ',' -%}
+    {%- assign row_labels = 'Length,Shoulder,Chest,Sleeve length' | split: ',' -%}
+    {%- assign row_values = '70,72,74,76,78|65,67,69,71,73|66,68,70,72,74|53.5,54.5,55.5,56.5,57.5' | split: '|' -%}
+{%- endcase -%}
+
+{%- if sizes != blank -%}
+<style>
+  .size-guide-link {
+    display: inline-block;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0 0 1rem;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #000;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  .size-guide-link:hover { opacity: 0.6; }
+
+  /* Sits above the sitewide sticky footer, which is fixed at z-index 999. */
+  .size-guide-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+  }
+  .size-guide-overlay.is-open { display: flex; }
+
+  .size-guide-card {
+    background: #fff;
+    border: 1px solid #000;
+    padding: 1.25rem;
+    width: 100%;
+    max-width: 520px;
+    max-height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .size-guide-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.9rem;
+  }
+  .size-guide-head h2 {
+    margin: 0;
+    font-size: 14px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+  }
+  .size-guide-close {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 22px;
+    line-height: 1;
+    color: #000;
+    cursor: pointer;
+  }
+
+  .size-guide-units { display: flex; margin-bottom: 0.8rem; }
+  .size-guide-unit {
+    border: 1px solid #000;
+    background: #fff;
+    color: #000;
+    padding: 5px 14px;
+    font-size: 11px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .size-guide-unit + .size-guide-unit { border-left: none; }
+  .size-guide-unit.is-on { background: #000; color: #fff; }
+
+  .size-guide-scroll { overflow-x: auto; }
+  .size-guide-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .size-guide-table th,
+  .size-guide-table td {
+    border: 1px solid #000;
+    padding: 6px 4px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .size-guide-table tbody th {
+    text-align: left;
+    padding-left: 8px;
+    font-weight: 400;
+  }
+  .size-guide-note {
+    margin: 0.7rem 0 0;
+    font-size: 11px;
+    line-height: 1.5;
+    color: #666;
+  }
+  .size-guide-how { margin: 0.9rem 0 0; }
+  .size-guide-how dt {
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+  }
+  .size-guide-how dd {
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.5;
+    color: #666;
+  }
+</style>
+
+<button type="button" class="size-guide-link" id="SizeGuideOpen" aria-haspopup="dialog">Size guide</button>
+
+<div class="size-guide-overlay" id="SizeGuideOverlay" role="dialog" aria-modal="true" aria-labelledby="SizeGuideTitle">
+  <div class="size-guide-card">
+    <div class="size-guide-head">
+      <h2 id="SizeGuideTitle">Size guide</h2>
+      <button type="button" class="size-guide-close" id="SizeGuideClose" aria-label="Close size guide">&times;</button>
+    </div>
+
+    <div class="size-guide-units" id="SizeGuideUnits">
+      <button type="button" class="size-guide-unit is-on" data-unit="cm">CM</button>
+      <button type="button" class="size-guide-unit" data-unit="in">IN</button>
+    </div>
+
+    <div class="size-guide-scroll">
+      <table class="size-guide-table">
+        <thead>
+          <tr>
+            <th></th>
+            {%- for size in sizes -%}<th>{{ size }}</th>{%- endfor -%}
+          </tr>
+        </thead>
+        <tbody>
+          {%- for label in row_labels -%}
+            {%- assign values = row_values[forloop.index0] | split: ',' -%}
+            <tr>
+              <th>{{ label }}</th>
+              {%- for value in values -%}
+                <td data-cm="{{ value }}">{{ value }}</td>
+              {%- endfor -%}
+            </tr>
+          {%- endfor -%}
+        </tbody>
+      </table>
+    </div>
+
+    <p class="size-guide-note">Garment measured flat, not body measurements. Allow 1&ndash;3 cm variance.</p>
+
+    <dl class="size-guide-how">
+      <dt>Length</dt>
+      <dd>Shoulder seam at the collar, straight down to the hem.</dd>
+      <dt>Chest</dt>
+      <dd>Armpit to armpit, laid flat.</dd>
+      <dt>Sleeve length</dt>
+      <dd>Shoulder seam at the armhole to the cuff.</dd>
+    </dl>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var openBtn = document.getElementById('SizeGuideOpen');
+    var overlay = document.getElementById('SizeGuideOverlay');
+    var closeBtn = document.getElementById('SizeGuideClose');
+    var units = document.getElementById('SizeGuideUnits');
+    if (!openBtn || !overlay) return;
+
+    var cells = overlay.querySelectorAll('td[data-cm]');
+    var lastFocus = null;
+
+    function open() {
+      lastFocus = document.activeElement;
+      overlay.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+      closeBtn.focus();
+    }
+
+    function close() {
+      overlay.classList.remove('is-open');
+      document.body.style.overflow = '';
+      if (lastFocus) lastFocus.focus();
+    }
+
+    function setUnit(unit) {
+      for (var i = 0; i < cells.length; i++) {
+        var cm = parseFloat(cells[i].getAttribute('data-cm'));
+        cells[i].textContent = unit === 'in' ? (cm / 2.54).toFixed(1) : String(cm);
+      }
+    }
+
+    openBtn.addEventListener('click', open);
+    closeBtn.addEventListener('click', close);
+
+    // Backdrop only. Clicks inside the card must not close it.
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) close();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay.classList.contains('is-open')) close();
+    });
+
+    units.addEventListener('click', function (e) {
+      var btn = e.target.closest('.size-guide-unit');
+      if (!btn) return;
+      var all = units.querySelectorAll('.size-guide-unit');
+      for (var i = 0; i < all.length; i++) all[i].classList.remove('is-on');
+      btn.classList.add('is-on');
+      setUnit(btn.getAttribute('data-unit'));
+    });
+  })();
+</script>
+{%- endif -%}
