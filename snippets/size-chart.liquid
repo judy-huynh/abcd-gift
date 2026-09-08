@@ -9,10 +9,13 @@
   Measurements are Tapstitch's own, garment measured flat, in centimetres.
   Inches are converted in JS at 2.54 so there is only one set of numbers to keep true.
 
-  The diagrams are Tapstitch's, copied into assets rather than hotlinked off their
-  CDN. Their callout numbers run in the same order as row_labels below, so the
-  how-to-measure list numbers itself from the row order. Reorder the rows and the
-  numbers stop matching the picture.
+  Callout numbers on every diagram run in the same order as row_labels below, so
+  the how-to-measure list numbers itself from the row order. Reorder the rows and
+  the numbers stop matching the picture.
+
+  The hoodie diagram is ours (abcd-size-hoodie.png). The tee and crop diagrams are
+  still Tapstitch's own artwork, which reverse-image-searches straight back to them
+  and should be replaced.
 {%- endcomment -%}
 
 {%- assign chart_key = '' -%}
@@ -64,11 +67,16 @@
     {%- assign sizes = 'S,M,L,XL,2XL' | split: ',' -%}
     {%- assign row_labels = 'Length,Shoulder,Chest,Sleeve length' | split: ',' -%}
     {%- assign row_values = '70,72,74,76,78|65,67,69,71,73|66,68,70,72,74|53.5,54.5,55.5,56.5,57.5' | split: '|' -%}
-    {%- assign diagram = 'size-guide-hoodie.jpg' -%}
-    {%- assign diagram_w = 700 -%}
-    {%- assign diagram_h = 932 -%}
+    {%- assign diagram = 'abcd-size-hoodie.png' -%}
+    {%- assign diagram_w = 510 -%}
+    {%- assign diagram_h = 471 -%}
+    {%- assign diagram_max = 250 -%}
+    {%- assign diagram_flex = '52%' -%}
     {%- assign diagram_alt = 'Hoodie laid flat with the four measurements marked' -%}
 {%- endcase -%}
+
+{%- assign diagram_max = diagram_max | default: 170 -%}
+{%- assign diagram_flex = diagram_flex | default: '34%' -%}
 
 {%- if sizes != blank -%}
 <style>
@@ -275,7 +283,8 @@
            data-src="{{ diagram | asset_url }}"
            alt="{{ diagram_alt }}"
            width="{{ diagram_w }}"
-           height="{{ diagram_h }}">
+           height="{{ diagram_h }}"
+           style="flex-basis: {{ diagram_flex }}; max-width: {{ diagram_max }}px;">
       <ol class="size-guide-how">
         {%- for label in row_labels -%}
           <li>
