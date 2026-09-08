@@ -2,7 +2,7 @@
 
 State of play for whoever picks this up next, human or agent. Read this before
 touching anything. `BLOG-SYSTEM.md` holds the blog pipeline design.
-Last updated 30 Aug 2026.
+Last updated 8 Sep 2026.
 
 ## Where things are
 
@@ -39,26 +39,37 @@ paying.
 **Size guide.** `snippets/size-chart.liquid`, called from one line in
 `sections/product-main.liquid`. Live on 11 of 14 products.
 
-- Four charts from Tapstitch, garment measured flat, stored in cm. Inches convert
-  in JS at 2.54. Default view is inches
+- Four charts, garment measured flat, stored in cm. Inches convert in JS at 2.54.
+  Default view is inches
 - A `chart-<key>` product tag picks the chart, else the handle lists in the
   snippet. No match means no link at all. Deliberate: a wrong chart causes
   returns, a missing one causes a question
-- Tapstitch's callout diagrams live in `assets/size-guide-*.jpg|png`, copied not
-  hotlinked, held in `data-src` until the modal opens. Their numbering matches the
-  chart row order, so the measure list numbers itself from `row_labels`. **Reorder
+- Diagrams are held in `data-src` until the modal opens. Callout numbers run in
+  the same order as `row_labels`, so the measure list numbers itself. **Reorder
   the rows and the numbers stop matching the picture**
+- Diagram width is per chart. `diagram_max` and `diagram_flex` default to 170px /
+  34%; the hoodie sets 250px / 52% because its drawing is landscape where the
+  others are portrait, and at 170px the callout numbers were unreadable
 
-Still uncovered, both need Judy:
+**Hoodie diagram is ours as of 8 Sep 2026** (`assets/abcd-size-hoodie.png`, commit
+`5fd60a3`). It replaced Tapstitch's own JPEG, which reverse image searched straight
+back to them. It also settled an open question: the drawing is a set-in shoulder
+pullover, not the zip-up their page shows, so "seam to seam" is now a measurement
+someone can actually take.
 
-- **Warehouse Cargo Pant.** No Tapstitch link yet, and a pant needs waist and
-  inseam rows the tops do not have
+`assets/size-guide-hoodie.jpg` is orphaned by this and can be deleted.
+
+Still uncovered, all need Judy:
+
+- **`size-guide-tshirt.jpg` and `size-guide-crop.png` are still Tapstitch's own
+  artwork.** These are the remaining reverse-image matches
+- **Warehouse Cargo Pant.** No measurements at all, and a pant needs waist, rise
+  and inseam rows the tops do not have
 - **"2025" T-Shirt.** Unconfirmed blank. Its sizes read `2XL` where the other tees
   read `XXL`, which suggests a different blank
+- **Crop tee Length reads `38,38,39,40`.** S and M identical. Could be real, could
+  be a copy error. Needs checking against a garment
 - Blox Logo Cap needs no chart. It correctly shows no link
-
-Open, Judy's call: the hoodie diagram is Tapstitch's zip-up drawing. Consistent
-with their page, possibly wrong if the hoodies are pullovers.
 
 ## Blog: built, not launched
 
@@ -121,11 +132,46 @@ post a week, enforced in code, because volume is the demotion risk.
 `TEMPLATE TEST — delete me` is sitting in Blog posts, Hidden. It was the render
 test. Safe to delete.
 
+## Open brief: making the size charts read as ours
+
+Paused 8 Sep 2026 to talk through rather than decide alone. Not a task list.
+
+**The question.** Someone screenshots our size guide and runs it through an AI, or
+just eyeballs it. What makes it read as a supplier spec sheet, and what would make
+it read as ABCD?
+
+**What we know so far.**
+
+The measurements themselves are the fingerprint and we cannot change them, because
+changing them means misdescribing the garment and that causes returns. So the goal
+is that it stops reading as a supplier chart at a glance, not that it becomes
+untraceable. Worth being honest about that ceiling up front.
+
+Everything below is a lever we have actually confirmed, not a plan:
+
+| Lever | Note |
+|---|---|
+| Round cm to whole numbers | The tee shoulder row reads `54.7, 56.2, 57.7, 59.5, 61.3, 63.1`. Exact decimals are what a match keys on. Rounding is also more honest: we state 1 to 3 cm variance, so one decimal is false precision. Precision is currently inconsistent row to row, Length whole and Shoulder to one decimal, which is itself the tell that these were copied rather than measured |
+| Drop the orange and the numbered discs | The visual signature, read before any number is. Our new hoodie diagram still has it |
+| Replace the tee and crop diagrams | Still literally their files |
+| Add a fit note per garment | No supplier chart has one. Needs Judy's words, not drafted copy |
+| Reorder the rows | Theirs is Length, Shoulder, Chest, Sleeve. Chest is what people check first |
+| Rewrite the note | "Garment measured flat, not body measurements" is generic supplier phrasing |
+| Settle `2XL` vs `XXL` | Inconsistent between the tee and the hoodie inside one store |
+
+**The more interesting version of the question**, and the reason this is paused
+rather than actioned: every lever above is subtractive, removing things that look
+like someone else. Nobody has yet asked what an ABCD size guide would have that no
+supplier chart would. A fit note is the first inch of that. The reference pages
+below are the visual thinking so far.
+
+
 ## Reference pages made along the way
 
 - Size guide directions: https://claude.ai/code/artifact/c177563e-c015-45d4-bc34-b90f9f63abbd
 - Blog layout mockups, galleries and shop block: https://claude.ai/code/artifact/873c462b-47fc-4857-ace2-74636fe99413
 - The ABCD Desk, blog pipeline design: https://claude.ai/code/artifact/47e50d9f-8d6c-43a5-9428-6f84246ea421
+- Measured Flat, four directions for a size-chart drawing that is ours: https://claude.ai/code/artifact/fecef45f-66ff-48e8-827a-a615545e1116
 
 ## Two SEO constraints that shaped all of the above
 
